@@ -9,9 +9,9 @@ const ImageClipBox = ({ src, clipClass }: { src: string; clipClass: string }) =>
 
 const ContactUs = () => {
   return (
-    <div id="contact" className="my-20 min-h-96 w-screen  px-10">
-      <div className="relative rounded-lg bg-black py-24 text-blue-50 sm:overflow-hidden">
-        <div className="absolute -left-20 top-0 hidden h-full w-72 overflow-hidden sm:block lg:left-20 lg:w-96">
+    <div id="contact" className="w-screen px-10 my-20 min-h-96">
+      <div className="relative py-24 bg-black rounded-lg text-blue-50 sm:overflow-hidden">
+        <div className="absolute top-0 hidden h-full overflow-hidden -left-20 w-72 sm:block lg:left-20 lg:w-96">
           <ImageClipBox src="/img/contact-1.webp" clipClass="contact-clip-path-1" />
           <ImageClipBox src="/img/contact-2.webp" clipClass="contact-clip-path-2 lg:translate-y-10 translate-y-60" />
         </div>
@@ -26,7 +26,7 @@ const ContactUs = () => {
 
           <AnimatedTitle
             title="let&#39;s b<b>u</b>ild the <br/> new era of <br/> g<b>a</b>ming t<b>o</b>gether."
-            className="special-font !md:text-[6.2rem] w-full font-zentry !text-8xl !font-black !leading-[.9]"
+            className="special-font !text-4xl md:!text-7xl w-full font-zentry !font-black !leading-[.9]"
           />
 
           <Button id="contact-us" title="contact us" containerClass="mt-10 cursor-pointer" />
