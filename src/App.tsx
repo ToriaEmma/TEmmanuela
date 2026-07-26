@@ -112,7 +112,7 @@ function PageContent() {
         title="Gummy"
         tagline="Eat the gummy with no regret"
         taglineEn="Eat the gummy with no regret"
-        hero="/REVOLU/big gummy.webp"
+        hero="/newbig.webp"
         intro="Gummy développe un univers gourmand, énergique et pop autour d’une identité illustrée à fort impact."
         introEn="Gummy builds a delicious, energetic pop universe around a high-impact illustrated identity."
         sectionTitle="Gummy collection"
