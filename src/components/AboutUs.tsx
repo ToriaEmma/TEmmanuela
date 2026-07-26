@@ -16,37 +16,37 @@ const AboutUs = () => {
   useEffect(() => {
     if (!sectionRef.current || !textRef.current) return;
 
-    // On mobile Locomotive Scroll is disabled (native window scroll), so the
-    // ".main-container" custom scroller never scrolls. A pinned +=5000 tween
-    // there produced a giant pin-spacer (huge black gap) and no motion.
-    // Use the native window scroller and translate the text as the section
-    // travels through the viewport, without pinning.
+    // On mobile the horizontal pinned scroll is disabled entirely: Locomotive
+    // Scroll is off (native scroll) and the pinned +=5000 tween produced a
+    // giant black pin-spacer with the text stuck off-screen. Instead the text
+    // is rendered as a readable, static, centered block (see JSX) and we simply
+    // fade its characters in when the section enters the viewport.
     const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
-    const scroller = isMobileViewport
-      ? undefined
-      : document.querySelector<HTMLElement>(".main-container");
-    if (!isMobileViewport && !scroller) return;
+
+    if (isMobileViewport) {
+      const context = gsap.context(() => {
+        gsap.from(".horizontal-character", {
+          opacity: 0,
+          y: 24,
+          stagger: 0.01,
+          duration: 0.5,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+          },
+        });
+      }, sectionRef);
+      return () => context.revert();
+    }
+
+    const scroller = document.querySelector<HTMLElement>(".main-container");
+    if (!scroller) return;
 
     const context = gsap.context(() => {
       const characters = gsap.utils.toArray<HTMLElement>(
         ".horizontal-character",
       );
-
-      if (isMobileViewport) {
-        // Simple horizontal reveal scrubbed over the section's own scroll span.
-        gsap.to(textRef.current, {
-          xPercent: -100,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        });
-        return;
-      }
 
       const scrollTween = gsap.to(textRef.current, {
         xPercent: -100,
@@ -86,12 +86,12 @@ const AboutUs = () => {
     <section
       id="about"
       ref={sectionRef}
-      className="theme-surface flex h-dvh items-center overflow-hidden bg-black"
+      className="theme-surface flex min-h-dvh items-center overflow-hidden bg-black px-6 md:px-0"
     >
       <h2
         ref={textRef}
         aria-label={messages.fr}
-        className="flex w-max gap-[4vw] whitespace-nowrap pl-[100vw] font-circular-web text-[clamp(3rem,10vw,12rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-white"
+        className="flex flex-wrap justify-center gap-x-[3vw] gap-y-2 text-center font-circular-web text-[clamp(2.25rem,11vw,3.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-white md:w-max md:flex-nowrap md:justify-start md:gap-[4vw] md:gap-y-0 md:whitespace-nowrap md:pl-[100vw] md:text-left md:text-[clamp(3rem,10vw,12rem)] md:leading-[0.95] md:tracking-[-0.04em]"
       >
         {messages.fr.split(" ").map((word, wordIndex) => (
           <span
