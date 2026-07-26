@@ -15,13 +15,38 @@ const AboutUs = () => {
 
   useEffect(() => {
     if (!sectionRef.current || !textRef.current) return;
-    const scroller = document.querySelector<HTMLElement>(".main-container");
-    if (!scroller) return;
+
+    // On mobile Locomotive Scroll is disabled (native window scroll), so the
+    // ".main-container" custom scroller never scrolls. A pinned +=5000 tween
+    // there produced a giant pin-spacer (huge black gap) and no motion.
+    // Use the native window scroller and translate the text as the section
+    // travels through the viewport, without pinning.
+    const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
+    const scroller = isMobileViewport
+      ? undefined
+      : document.querySelector<HTMLElement>(".main-container");
+    if (!isMobileViewport && !scroller) return;
 
     const context = gsap.context(() => {
       const characters = gsap.utils.toArray<HTMLElement>(
         ".horizontal-character",
       );
+
+      if (isMobileViewport) {
+        // Simple horizontal reveal scrubbed over the section's own scroll span.
+        gsap.to(textRef.current, {
+          xPercent: -100,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        });
+        return;
+      }
 
       const scrollTween = gsap.to(textRef.current, {
         xPercent: -100,

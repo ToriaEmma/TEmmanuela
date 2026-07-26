@@ -166,30 +166,40 @@ const Story = () => {
         (context) => {
           const { isDesktop } = context.conditions as { isDesktop: boolean };
 
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: "#story",
-              scroller,
-              start: "top top",
-              end: isDesktop ? "+=1500" : "+=1200",
-              scrub: 1,
-              pin: true,
-              pinSpacing: true,
-            },
-          });
-
           if (isDesktop) {
-            // Unfold/fan out cards horizontally on desktop
+            // Desktop: pin the section and fan the cards out horizontally.
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: "#story",
+                scroller,
+                start: "top top",
+                end: "+=1500",
+                scrub: 1,
+                pin: true,
+                pinSpacing: true,
+              },
+            });
             tl.to(".card-0", { x: -330, y: 25, rotate: -14, duration: 1 }, 0)
               .to(".card-1", { x: -110, y: -10, rotate: -5, duration: 1 }, 0)
               .to(".card-2", { x: 110, y: -10, rotate: 5, duration: 1 }, 0)
               .to(".card-3", { x: 330, y: 25, rotate: 14, duration: 1 }, 0);
           } else {
-            // Swipe away cards sequentially on mobile
-            tl.to(".card-0", { y: -340, x: -60, rotate: -15, opacity: 0, duration: 1 }, 0)
-              .to(".card-1", { y: -340, x: 60, rotate: 15, opacity: 0, duration: 1 }, 1)
-              .to(".card-2", { y: -340, x: -40, rotate: -10, opacity: 0, duration: 1 }, 2)
-              .to(".card-3", { rotate: 0, y: 0, x: 0, duration: 0.5 }, 3);
+            // Mobile: NO pin (native scroll + a pinned section produced a huge
+            // pin-spacer and a big black gap). Scrub the card fan-out as the
+            // cards section travels through the viewport instead.
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: "#story .cards-stage",
+                scroller,
+                start: "top 80%",
+                end: "top 20%",
+                scrub: 1,
+              },
+            });
+            tl.to(".card-0", { x: -70, y: 6, rotate: -16, duration: 1 }, 0)
+              .to(".card-1", { x: -26, y: -4, rotate: -6, duration: 1 }, 0)
+              .to(".card-2", { x: 26, y: -4, rotate: 6, duration: 1 }, 0)
+              .to(".card-3", { x: 70, y: 6, rotate: 16, duration: 1 }, 0);
           }
         }
       );
@@ -238,7 +248,7 @@ const Story = () => {
       </div>
 
       {/* CENTER SECTION: Unfolding Skills Cards Collage */}
-      <div className="relative w-full h-[320px] md:h-[480px] z-20 my-12 md:my-6">
+      <div className="cards-stage relative w-full h-[320px] md:h-[480px] z-20 my-12 md:my-6">
         {skills.map((skill, index) => (
           <SkillCard
             key={index}
