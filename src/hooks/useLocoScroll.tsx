@@ -8,6 +8,24 @@ const useLocoScroll = () => {
   const [locoScroll, setLocoScroll] = useState<LocomotiveScroll | null>(null);
   const [progress, setProgress] = useState(0);
   useLayoutEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (isMobile) {
+      let frame = 0;
+      const updateNativeProgress = () => {
+        if (frame) return;
+        frame = window.requestAnimationFrame(() => {
+          frame = 0;
+          setProgress(window.scrollY);
+        });
+      };
+      updateNativeProgress();
+      window.addEventListener("scroll", updateNativeProgress, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", updateNativeProgress);
+        window.cancelAnimationFrame(frame);
+      };
+    }
+
     //importing locomotive scroll
     //getting the scroller element from the dom
     const scrollEl: HTMLElement | null = document.querySelector(".main-container");
@@ -17,17 +35,28 @@ const useLocoScroll = () => {
       el: scrollEl,
       smooth: true,
       multiplier: 1.5,
-      //@ts-ignore
-      mobile: {
-        smooth: true,
-      },
     });
     setLocoScroll(locoScrollInstance);
+    const restorationKey = `emmanuela-scroll:${window.location.pathname}${window.location.search}`;
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
 
     // every time the locomotive scroll updates (scrolls) we want the scrolltrigger from gsap to update
     //this is like sync the positioning of the two
     locoScrollInstance.on("scroll", ScrollTrigger.update);
-    locoScrollInstance.on("scroll", (args) => setProgress(args.scroll.y));
+    locoScrollInstance.on("scroll", (args) => {
+      setProgress(args.scroll.y);
+      sessionStorage.setItem(restorationKey, String(args.scroll.y));
+    });
+
+    const restoreSavedPosition = () => {
+      if (window.location.hash) return;
+      const savedPosition = Number(sessionStorage.getItem(restorationKey));
+      if (!Number.isFinite(savedPosition) || savedPosition <= 0) return;
+      locoScrollInstance.update();
+      locoScrollInstance.scrollTo(savedPosition, { duration: 0, disableLerp: true });
+    };
+    const restoreTimers = [0, 250, 1000, 3000].map((delay) => window.setTimeout(restoreSavedPosition, delay));
+    window.addEventListener("load", restoreSavedPosition);
     //
 
     ScrollTrigger.scrollerProxy(scrollEl, {
@@ -56,6 +85,8 @@ const useLocoScroll = () => {
     // Cleanup on component unmount
     return () => {
       if (locoScrollInstance) {
+        restoreTimers.forEach((timer) => window.clearTimeout(timer));
+        window.removeEventListener("load", restoreSavedPosition);
         ScrollTrigger.removeEventListener("refresh", lsUpdate);
         locoScrollInstance.destroy(); // Destroy Locomotive Scroll instance
       }

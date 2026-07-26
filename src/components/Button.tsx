@@ -8,7 +8,7 @@ const Button = ({
   rightIcon,
 }: {
   id: string;
-  title: string;
+  title: ReactNode;
   leftIcon?: ReactNode;
   containerClass: string;
   rightIcon?: ReactNode;

@@ -1,82 +1,98 @@
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { MouseParallaxContainer, MouseParallaxChild } from "react-parallax-mouse";
-import { useEffect } from "react";
-import AnimatedTitle from "./AnimatedTitle";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const messages = {
+  fr: "Je transforme les idées en expériences digitales qui marquent.",
+  en: "I turn ideas into memorable digital experiences.",
+};
 
 const AboutUs = () => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLHeadingElement | null>(null);
+
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!sectionRef.current || !textRef.current) return;
+    const scroller = document.querySelector<HTMLElement>(".main-container");
+    if (!scroller) return;
+
     const context = gsap.context(() => {
-      if (!isMobile) gsap.set(".mask-clip-path2", { clipPath: " polygon(14% 0, 82% 16%, 80% 92%, 6% 89%)" });
-      gsap
-        .timeline({
+      const characters = gsap.utils.toArray<HTMLElement>(
+        ".horizontal-character",
+      );
+
+      const scrollTween = gsap.to(textRef.current, {
+        xPercent: -100,
+        ease: "none",
+        scrollTrigger: {
+          scroller,
+          trigger: sectionRef.current,
+          pin: true,
+          start: "top top",
+          end: "+=5000",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      characters.forEach((character) => {
+        gsap.from(character, {
+          yPercent: gsap.utils.random(-200, 200),
+          rotation: gsap.utils.random(-20, 20),
+          ease: "back.out(1.2)",
           scrollTrigger: {
-            scroller: ".main-container",
-            trigger: "#clip",
-            start: "51% center",
-            end: "+=800 center",
-            scrub: 0.5,
-            pin: true,
-            pinSpacing: true,
-            onLeaveBack: () => {
-              if (!isMobile) gsap.to(".mask-clip-path2", { clipPath: " polygon(14% 0, 82% 16%, 80% 92%, 6% 89%)" });
-            },
-            onUpdate: (self) => {
-              if (isMobile) return;
-              const progress = self.progress;
-              console.log(progress);
-              const clipPathValue = `
-              polygon(
-                ${gsap.utils.interpolate(14, 0, progress)}% 0%, 
-                ${gsap.utils.interpolate(82, 100, progress)}% 0%, 
-                ${gsap.utils.interpolate(80, 100, progress)}% 100%, 
-                ${gsap.utils.interpolate(6, 0, progress)}% 100%
-              )
-            `;
-              gsap.to(".mask-clip-path2", { clipPath: clipPathValue });
-            },
+            trigger: character,
+            scroller,
+            containerAnimation: scrollTween,
+            start: "left 100%",
+            end: "left 30%",
+            scrub: 1,
           },
-        })
-        .to(".mask-clip-path2", {
-          width: "100vw",
-          height: "100vh",
-          borderRadius: 0,
         });
-    });
+      });
+    }, sectionRef);
+
     return () => context.revert();
   }, []);
 
   return (
-    <div id="about" className=" min-h-screen w-screen flex flex-col  overflow-hidden bg-blue-50">
-      <div className="flex relative mb-8 mt-36 flex-col items-center gap-5">
-        {" "}
-        <p className="font-general  text-sm uppercase md:text-[10px]">WELCOME TO ZENTRY</p>
-        <AnimatedTitle
-          title=" DISC<b>O</b>VER THE WORLD'S LARGEST SHARED <b>A</b>DVENTURE"
-          className=" mt-5 w-full !text-black text-center"
-        />
-      </div>
-
-      <MouseParallaxContainer globalFactorX={0.1} globalFactorY={0.1}>
-        <MouseParallaxChild factorX={0.3} factorY={0.5}>
-          <div id="clip" className=" relative h-dvh ">
-            <div
-              className=" absolute rounded-3xl overflow-hidden left-1/2 top-0 z-20 border border-black mask-clip-path2 origin-center
-         -translate-x-1/2  w-[30vw] h-96"
-            >
-              <img src="/img/about.webp" className=" absolute inset-0 size-full object-cover" alt="" />
-            </div>{" "}
-            <div className=" about-subtext">
-              <p className=" capitalize">The Game of Games begins—your life, now an epic MMORPG</p>
-              <p className=" text-gray-500">
-                Zentry unites the every players from countless games and platforms, both digital and physical, into a
-                unified Play Economy
-              </p>
-            </div>
-          </div>
-        </MouseParallaxChild>
-      </MouseParallaxContainer>
-    </div>
+    <section
+      id="about"
+      ref={sectionRef}
+      className="theme-surface flex h-dvh items-center overflow-hidden bg-black"
+    >
+      <h2
+        ref={textRef}
+        aria-label={messages.fr}
+        className="flex w-max gap-[4vw] whitespace-nowrap pl-[100vw] font-circular-web text-[clamp(3rem,10vw,12rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-white"
+      >
+        {messages.fr.split(" ").map((word, wordIndex) => (
+          <span
+            key={`${word}-${wordIndex}`}
+            aria-hidden="true"
+            className="lang-fr inline-flex"
+          >
+            {word.split("").map((character, characterIndex) => (
+              <span
+                key={`${character}-${characterIndex}`}
+                className="horizontal-character inline-block"
+              >
+                {character}
+              </span>
+            ))}
+          </span>
+        ))}
+        {messages.en.split(" ").map((word, wordIndex) => (
+          <span key={`${word}-${wordIndex}`} aria-hidden="true" className="lang-en inline-flex">
+            {word.split("").map((character, characterIndex) => (
+              <span key={`${character}-${characterIndex}`} className="horizontal-character inline-block">{character}</span>
+            ))}
+          </span>
+        ))}
+      </h2>
+    </section>
   );
 };
 

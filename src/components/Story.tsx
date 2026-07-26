@@ -1,105 +1,262 @@
-import { useEffect, useRef } from "react";
-import AnimatedTitle from "./AnimatedTitle";
+import React, { useEffect } from "react";
 import gsap from "gsap";
-import RoundedCorners from "./RoundedCorners";
-import Button from "./Button";
 import { ScrollTrigger } from "gsap/all";
+import { LocalizedText } from "./LanguageToggle";
 
-const Story = () => {
-  const frameRef = useRef<HTMLImageElement>(null);
-  const handleMouseLeave = () => {
-    const element = frameRef.current;
-    if (!element) return;
-    gsap.to(element, { rotateX: 0, rotateY: 0, duration: 0.3, ease: "power1.inOut" });
-  };
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY } = e;
-    const element = frameRef.current;
-    if (!element) return;
-    const rect = element.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -25;
-    const rotateY = ((x - centerX) / centerX) * 25;
-    gsap.to(element, { rotateX, rotateY, duration: 0.3, perspective: 600, ease: "power1.inOut" });
-  };
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: ".imgtilt",
-            scroller: ".main-container",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.5,
-          },
-        })
-        .to(".story-img-content img", { y: 100 });
-      const lastSectionAnimation = gsap
-        .timeline()
-        .from(".lastSection p", {
-          transform: "translate3d(0,100px,500px) rotateY(60deg) rotateX(-40deg)",
-          transformOrigin: "50% 50% -50%",
-          opacity: 0,
-          duration: 1.4,
-        })
-        .from("#realm-btn", { y: 40, opacity: 0,duration: 1 }, "<");
-      ScrollTrigger.create({
-        trigger: ".lastSection",
-        scroller: ".main-container",
-        start: "top 90%",
-        end: "bottom top",
-        onUpdate: (self) => {
-          if (self.direction === -1) lastSectionAnimation.reverse();
-          else lastSectionAnimation.play();
-        },
-      });
-    });
+gsap.registerPlugin(ScrollTrigger);
 
-    return () => ctx.revert();
-  }, []);
+interface SkillCardProps {
+  num: string;
+  title: string;
+  desc: string;
+  gradient: string;
+  className: string;
+  style?: React.CSSProperties;
+  hoverRotateClass?: string;
+  accentColor: string;
+  textDark?: boolean;
+}
+
+const SkillCard = ({ title, desc, gradient, className, style, hoverRotateClass, accentColor, textDark }: SkillCardProps) => {
+  // Combine custom styles with hover CSS variables
+  const cardStyle = {
+    ...style,
+    "--hover-bg": accentColor,
+    "--hover-text": textDark ? "#000000" : "#ffffff",
+  } as React.CSSProperties;
+
   return (
-    <section id="story" className="  min-h-dvh w-screen bg-black text-blue-50">
-      <div className="flex size-full flex-col items-center py-10 pb-24">
-        <p className=" font-general text-sm uppercase md:text-[10px]">the mutliversal ip world</p>
-        <div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseLeave}
-          onMouseEnter={handleMouseLeave}
-          className=" relative size-full"
-        >
-          <AnimatedTitle
-            sectionId="storyTitle"
-            className="
-             mt-5 pointer-events-none   mix-blend-difference relative z-10"
-            title="THE ST<b>o</b>RY OF <br/> THE HIDDEN REAL<b>M</b>"
-          />
-          <div className=" w-full imgtilt story-img-container  h-[90vh] md:h-dvh relative">
-            <div className=" story-img-mask">
-              <div className="story-img-content">
-                <img ref={frameRef} src="/img/entrance.webp" alt="entrance.webp" className="object-contain" />
-              </div>
-            </div>
-            <RoundedCorners />
+    <div className={`absolute card-wrapper ${className} hover:!z-[50]`} style={cardStyle}>
+      <div className={`w-[190px] md:w-[275px] aspect-[4/5] bg-white rounded-[2rem] shadow-xl overflow-hidden flex flex-col border border-black/[0.05] hover:scale-105 hover:-translate-y-6 hover:shadow-2xl transition-all duration-300 cursor-pointer group/card ${hoverRotateClass || ""}`}>
+        {/* Top diagonal stripe header */}
+        <div 
+          className="h-[28%] w-full"
+          style={{ background: gradient }}
+        />
+        
+        {/* Overlapping rounded body */}
+        <div className="flex-1 bg-[#f6f6f6] rounded-t-[2rem] -mt-8 p-5 md:p-6 relative flex flex-col justify-between z-10">
+          {/* Title */}
+          <div className="text-left">
+            <h3 className="font-sans font-black text-lg md:text-xl text-black leading-tight tracking-tight uppercase">
+              <LocalizedText fr={title} en={{ "UI/UX Design": "UI/UX Design", "Creative Dev": "Creative Dev", "Art Direction": "Art Direction", "Branding": "Branding" }[title] || title} />
+            </h3>
           </div>
-        </div>
-        <div className="lastSection -mt-80 flex w-full justify-center md:-mt-64  md:me-44 md:justify-end">
-          <div className="flex flex-col h-full w-fit items-center md:items-start">
-            <p
-              style={{ perspective: "600px" }}
-              className="mt-3 max-w-sm text-center font-circular-web text-violet-50 md:text-start"
-            >
-              Where realms converge, lies Zentry and the boundless pillar. Discover its secrets and shape your fate
-              amidst infinite opportunities.
-            </p>{" "}
-            <Button id="realm-btn" title="discover prologue" containerClass="mt-5" />
+
+          {/* Bottom Row */}
+          <div className="flex items-end justify-between gap-2 mt-4">
+            <p className="mobile-fr-skill-copy text-left text-black/50 font-sans font-medium text-xs md:text-[10px] leading-relaxed max-w-[75%]">
+              <LocalizedText fr={desc} en={{
+                "Conception d'interfaces intuitives et esthétiques centrées sur l'expérience utilisateur.": "Design of intuitive, beautiful interfaces centered on user experience.",
+                "Sites web interactifs et animés avec React, GSAP, Tailwind CSS et Three.js.": "Interactive, animated websites built with React, GSAP, Tailwind CSS and Three.js.",
+                "Direction artistique complète pour créer des univers graphiques mémorables.": "Complete art direction for memorable visual worlds.",
+                "Création d'identités visuelles fortes et percutantes qui résonnent avec votre audience.": "Strong visual identities that resonate with your audience.",
+              }[desc] || desc} />
+            </p>
+            
+            {/* Pixelated Chevron Button */}
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-black flex items-center justify-center shadow-md group-hover/card:bg-[var(--hover-bg)] transition-colors duration-300 shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 md:w-5 md:h-5 animate-pulse">
+                <rect x="6" y="6" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="8" y="8" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="10" y="10" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="8" y="12" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="6" y="14" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                
+                <rect x="12" y="6" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="14" y="8" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="16" y="10" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="14" y="12" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+                <rect x="12" y="14" width="2" height="2" className="fill-white group-hover/card:fill-[var(--hover-text)] transition-colors duration-300"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const Story = () => {
+  const skills = [
+    {
+      num: "01",
+      title: "UI/UX Design",
+      desc: "Conception d'interfaces intuitives et esthétiques centrées sur l'expérience utilisateur.",
+      gradient: "repeating-linear-gradient(135deg, #d4ff36, #d4ff36 15px, #16161a 15px, #16161a 30px)", // Neon Green + Dark Charcoal
+      hoverRotate: "md:hover:rotate-[14deg]",
+      accentColor: "#d4ff36",
+      textDark: true
+    },
+    {
+      num: "02",
+      title: "Creative Dev",
+      desc: "Sites web interactifs et animés avec React, GSAP, Tailwind CSS et Three.js.",
+      gradient: "repeating-linear-gradient(135deg, #fb6f92, #fb6f92 15px, #16161a 15px, #16161a 30px)", // Pink + Dark Charcoal
+      hoverRotate: "md:hover:rotate-[5deg]",
+      accentColor: "#fb6f92",
+      textDark: false
+    },
+    {
+      num: "03",
+      title: "Art Direction",
+      desc: "Direction artistique complète pour créer des univers graphiques mémorables.",
+      gradient: "repeating-linear-gradient(135deg, #1a73e8, #1a73e8 15px, #16161a 15px, #16161a 30px)", // Blue + Dark Charcoal
+      hoverRotate: "md:hover:rotate-[-5deg]",
+      accentColor: "#1a73e8",
+      textDark: false
+    },
+    {
+      num: "04",
+      title: "Branding",
+      desc: "Création d'identités visuelles fortes et percutantes qui résonnent avec votre audience.",
+      gradient: "repeating-linear-gradient(135deg, #5542ff, #5542ff 15px, #16161a 15px, #16161a 30px)", // Purple-Blue + Dark Charcoal
+      hoverRotate: "md:hover:rotate-[-14deg]",
+      accentColor: "#5542ff",
+      textDark: false
+    }
+  ];
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    const ctx = gsap.context(() => {
+      // Parallax effect on the background marquee container
+      gsap.to(".marquee-container", {
+        x: -80,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#story",
+          scroller: ".main-container",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.5,
+        }
+      });
+
+      // Initialize the cards position to center stack
+      gsap.set(".card-wrapper", {
+        xPercent: -50,
+        yPercent: -50,
+        x: 0,
+        y: 0,
+        left: "50%",
+        top: "50%",
+      });
+
+      // Initial stack rotation/position offsets for realistic deck aesthetic
+      gsap.set(".card-0", { rotate: -3, y: 0, x: 0 });
+      gsap.set(".card-1", { rotate: 2, y: 4, x: 2 });
+      gsap.set(".card-2", { rotate: -1, y: 8, x: -2 });
+      gsap.set(".card-3", { rotate: 3, y: 12, x: 3 });
+
+      // Match media for desktop (horizontal fanning) vs mobile (stack reveal swipe)
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        {
+          isDesktop: "(min-width: 769px)",
+          isMobile: "(max-width: 768px)",
+        },
+        (context) => {
+          const { isDesktop } = context.conditions as { isDesktop: boolean };
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: "#story",
+              scroller: ".main-container",
+              start: "top top",
+              end: isDesktop ? "+=1500" : "+=1500",
+              scrub: 1,
+              pin: true,
+              pinSpacing: true,
+            },
+          });
+
+          if (isDesktop) {
+            // Unfold/fan out cards horizontally on desktop
+            tl.to(".card-0", { x: -330, y: 25, rotate: -14, duration: 1 }, 0)
+              .to(".card-1", { x: -110, y: -10, rotate: -5, duration: 1 }, 0)
+              .to(".card-2", { x: 110, y: -10, rotate: 5, duration: 1 }, 0)
+              .to(".card-3", { x: 330, y: 25, rotate: 14, duration: 1 }, 0);
+          } else {
+            // Swipe away cards sequentially on mobile
+            tl.to(".card-0", { y: -340, x: -60, rotate: -15, opacity: 0, duration: 1 }, 0)
+              .to(".card-1", { y: -340, x: 60, rotate: 15, opacity: 0, duration: 1 }, 1)
+              .to(".card-2", { y: -340, x: -40, rotate: -10, opacity: 0, duration: 1 }, 2)
+              .to(".card-3", { rotate: 0, y: 0, x: 0, duration: 0.5 }, 3);
+          }
+        }
+      );
+    });
+
+    // Refresh ScrollTrigger to sync with Locomotive Scroll once the component and layout are fully ready
+    timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+
+    return () => {
+      ctx.revert();
+      clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <section
+      id="story"
+      className="theme-surface relative -mt-[3px] min-h-screen w-screen bg-black text-white overflow-hidden pt-[calc(7rem+3px)] pb-16 md:pt-[calc(12rem+3px)] md:pb-24 px-6 md:px-16 flex flex-col justify-between z-10"
+    >
+      {/* Background Marquee Text */}
+      <div className="absolute inset-x-0 top-[50%] -translate-y-1/2 overflow-hidden pointer-events-none select-none z-0 opacity-[0.06] marquee-container">
+        <div className="flex whitespace-nowrap animate-marquee font-sans font-black text-[18vw] md:text-[14vw] tracking-wider uppercase text-white">
+          <span># CREATIVE &nbsp; # INTERACTION &nbsp; # DEVELOPMENT &nbsp; # DESIGN &nbsp; &nbsp;</span>
+          <span># CREATIVE &nbsp; # INTERACTION &nbsp; # DEVELOPMENT &nbsp; # DESIGN &nbsp; &nbsp;</span>
+        </div>
+      </div>
+
+      {/* TOP SECTION: Typography Header */}
+      <div className="w-full flex justify-end text-right z-10 pr-2 md:pr-8">
+        <h2 className="mobile-fr-vision font-sans font-black text-[7.2vw] sm:text-[6.2vw] md:text-[4.2vw] lg:text-[3.8vw] leading-[1.05] tracking-tight uppercase">
+          <span className="lang-en text-white/30">
+            I AM A CREATIVE DEVELOPER
+            <br />
+            DEDICAT
+          </span>
+          <span className="lang-en text-white">
+            ED TO EMPOWERING YOUR
+            <br />
+            DIGITAL VISION.
+          </span>
+          <span className="lang-fr text-white/30">JE SUIS UNE DÉVELOPPEUSE CRÉATIVE<br />DÉDIÉE À </span>
+          <span className="lang-fr text-white">DONNER VIE À VOTRE<br />VISION DIGITALE.</span>
+        </h2>
+      </div>
+
+      {/* CENTER SECTION: Unfolding Skills Cards Collage */}
+      <div className="relative w-full h-[320px] md:h-[480px] z-20 my-12 md:my-6">
+        {skills.map((skill, index) => (
+          <SkillCard
+            key={index}
+            num={skill.num}
+            title={skill.title}
+            desc={skill.desc}
+            gradient={skill.gradient}
+            className={`card-${index}`}
+            style={{ zIndex: 40 - index * 10 }}
+            hoverRotateClass={skill.hoverRotate}
+            accentColor={skill.accentColor}
+            textDark={skill.textDark}
+          />
+        ))}
+      </div>
+
+      {/* BOTTOM SECTION: Paragraph Description */}
+      <div className="w-full flex justify-start z-10 md:absolute md:left-12 md:bottom-16 md:max-w-[15vw] pl-2 md:pl-0 mt-8 md:mt-0">
+        <p className="max-w-[300px] md:max-w-none text-white/50 font-sans font-medium text-sm md:text-[11px] leading-relaxed">
+          <LocalizedText fr="Créatrice d'expériences numériques interactives, je fusionne design et développement pour donner vie à vos projets." en="I create interactive digital experiences, combining design and development to bring your projects to life." />
+        </p>
+      </div>
+
     </section>
   );
 };
