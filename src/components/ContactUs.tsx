@@ -40,7 +40,7 @@ const ContactUs = () => {
               WebkitClipPath: "url(#cta-card-clip)"
             }}
           >
-            <img loading="lazy" decoding="async" src="/img/cta_fashion_model.webp" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" alt="Emmanuela Project" />
+            <img loading="lazy" decoding="async" src="/optimized/hero-p4.webp" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" alt="Emmanuela Project" />
           </div>
 
           {/* SVG Border Overlay follow exact S-curve path */}
