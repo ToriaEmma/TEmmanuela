@@ -120,6 +120,11 @@ const Story = () => {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
+    // On mobile Locomotive Scroll is disabled (native window scroll), so the custom
+    // ".main-container" scroller never scrolls — ScrollTriggers must target the window.
+    const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
+    const scroller = isMobileViewport ? undefined : ".main-container";
+
     const ctx = gsap.context(() => {
       // Parallax effect on the background marquee container
       gsap.to(".marquee-container", {
@@ -127,7 +132,7 @@ const Story = () => {
         ease: "none",
         scrollTrigger: {
           trigger: "#story",
-          scroller: ".main-container",
+          scroller,
           start: "top bottom",
           end: "bottom top",
           scrub: 0.5,
@@ -164,9 +169,9 @@ const Story = () => {
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: "#story",
-              scroller: ".main-container",
+              scroller,
               start: "top top",
-              end: isDesktop ? "+=1500" : "+=1500",
+              end: isDesktop ? "+=1500" : "+=1200",
               scrub: 1,
               pin: true,
               pinSpacing: true,
