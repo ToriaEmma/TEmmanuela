@@ -6,6 +6,14 @@ import { supabase } from "../lib/supabase";
 
 type Vibe = { id: number; type: "note" | "drawing"; content: string; name: string; color: string; rotation: number };
 
+const canvasToBlob = (canvas: HTMLCanvasElement) => new Promise<Blob>((resolve, reject) => {
+  canvas.toBlob(
+    (blob) => blob ? resolve(blob) : reject(new Error("Le dessin n’a pas pu être converti.")),
+    "image/webp",
+    0.8,
+  );
+});
+
 const colors = ["#ffffff", "#f4f4f1", "#ffaaa2", "#ffd2a0", "#aee9bd", "#a9e9e4", "#a9d8f5", "#d0b6f6", "#f4acd7"];
 const VibeCheckPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -100,12 +108,12 @@ const VibeCheckPage = () => {
       const type: Vibe["type"] = mode === "draw" ? "drawing" : "note";
 
       if (type === "drawing") {
-        const dataUrl = canvasRef.current?.toDataURL("image/webp", 0.8);
-        if (!dataUrl) return;
-        const drawing = await fetch(dataUrl).then((response) => response.blob());
-        const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.webp`;
+        if (!canvasRef.current) throw new Error("Canvas indisponible.");
+        const drawing = await canvasToBlob(canvasRef.current);
+        const extension = drawing.type === "image/png" ? "png" : "webp";
+        const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${extension}`;
         const { error: uploadError } = await supabase.storage.from("vibe-drawings").upload(path, drawing, {
-          contentType: "image/webp",
+          contentType: drawing.type || "image/webp",
           cacheControl: "31536000",
         });
         if (uploadError) throw uploadError;
@@ -126,8 +134,10 @@ const VibeCheckPage = () => {
       setMessage("");
       setName("");
       setMode("board");
-    } catch {
-      setPublishError("La publication a échoué. Réessaie dans un instant.");
+    } catch (error) {
+      console.error("Vibe Check publication error", error);
+      const reason = error instanceof Error ? error.message : "Erreur inconnue";
+      setPublishError(`La publication a échoué : ${reason}`);
     } finally {
       setIsPublishing(false);
     }
