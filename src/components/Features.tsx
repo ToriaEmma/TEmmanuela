@@ -3,6 +3,7 @@ import BentoCard, { BentoTilt } from "./BentoCard";
 import BrandingGalleryModal, { brandingImages } from "./BrandingGalleryModal";
 import { LocalizedText } from "./LanguageToggle";
 import { navigateTo } from "../utils/navigation";
+import AccordionGallery from "./AccordionGallery";
 
 const secureImages = Array.from({ length: 4 }, (_, index) => ({
   src: `/REVOLU/secure/${index + 1}.webp`,
@@ -321,59 +322,35 @@ const Features = ({ showAllSiteProjects = false, activeFilter = "all", showProje
           </button>
         </div>
 
-        <div
-          className="relative hidden h-[55vh] min-h-[360px] items-center border-b border-white/15 md:flex md:h-[68vh]"
-          onMouseLeave={() => setActivePoster(null)}
-        >
-          <p className="absolute left-0 z-10 text-[9px] uppercase tracking-wide text-white/75 md:text-xs">
+        <div className="relative hidden min-h-[560px] border-b border-white/15 py-16 md:block">
+          <p className="mb-7 text-[9px] uppercase tracking-wide text-white/75 md:text-xs">
             <LocalizedText fr="Affiches" en="Posters" /> [{String(brandingImages.length).padStart(2, "0")}]
           </p>
 
-          <div className="absolute left-1/2 z-30 flex w-[40%] -translate-x-1/2 items-center justify-center gap-1 md:w-[46%] md:gap-1.5">
-            {brandingImages.map((poster, index) => (
-              <button
-                type="button"
-                data-project-card
-                data-poster-card
-                key={poster.src}
-                onMouseEnter={() => setActivePoster(index)}
-                onFocus={() => setActivePoster(index)}
-                onBlur={() => setActivePoster(null)}
-                onClick={() => setActivePoster(index)}
-                className="aspect-[0.72] min-w-0 flex-1 overflow-hidden transition-transform duration-500 ease-out"
-                style={activePoster === null ? undefined : {
-                  transform: index < Math.ceil(brandingImages.length / 2)
-                    ? "translateX(-17vw)"
-                    : "translateX(17vw)",
-                }}
-                aria-label={`Agrandir ${poster.title}`}
-              >
-                <img
-                  src={poster.src}
-                  alt={poster.title}
-                  className={`size-full object-cover ${
-                    activePoster !== null && activePoster !== index ? "brightness-[0.25]" : ""
-                  }`}
-                  loading="lazy"
-                />
-              </button>
-            ))}
-          </div>
-
-          {activePoster !== null && (
-            <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 h-[75%] max-h-[560px] -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-black shadow-2xl">
-              <img loading="lazy" decoding="async"
-                src={brandingImages[activePoster].src}
-                alt=""
-                className="h-full w-auto max-w-none object-contain"
-              />
-            </div>
-          )}
+          <AccordionGallery
+            items={brandingImages.map((poster) => ({ image: poster.src, label: poster.title }))}
+            defaultIndex={2}
+            expandRatio={0.52}
+            accentColor="#ffffff"
+            overlayColor="#060010"
+            textColor="#ffffff"
+            grayscale
+            showLabels
+            duration={0.6}
+            ease="power3.out"
+            parallax={0.5}
+            tilt={8}
+            stagger={0.06}
+            height={460}
+            gap={10}
+            radius={16}
+            onItemClick={() => openGallery(brandingImages)}
+          />
 
           <button
             type="button"
             onClick={() => openGallery(brandingImages)}
-            className="absolute right-0 z-10 flex items-center gap-1 font-circular-web text-[9px] uppercase text-white/80 md:text-xs"
+            className="mt-7 ml-auto flex items-center gap-1 font-circular-web text-[9px] uppercase text-white/80 md:text-xs"
           >
             <LocalizedText fr="Voir tout" en="View all" /> <span aria-hidden="true">→</span>
           </button>

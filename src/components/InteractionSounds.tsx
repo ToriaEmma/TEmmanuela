@@ -64,17 +64,6 @@ const InteractionSounds = () => {
       if (!card) return;
       playPool(cardPool, cardPoolIndex++);
     };
-    // Desktop (mouse): play on hover. On touch devices there is no real hover,
-    // and the tap already triggers playCardSound (pointerdown on [data-project-card]),
-    // so we skip the synthetic mouseover here to avoid a double / mistimed sound.
-    const playPosterHoverSound = (event: MouseEvent) => {
-      if (!soundEffectsEnabled()) return;
-      if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
-      const target = event.target as HTMLElement | null;
-      const poster = target?.closest("[data-poster-card]");
-      if (!poster || (event.relatedTarget instanceof Node && poster.contains(event.relatedTarget))) return;
-      playPool(cardPool, cardPoolIndex++);
-    };
     const playClickSound = (event: PointerEvent) => {
       if (!soundEffectsEnabled()) return;
       const target = event.target as HTMLElement | null;
@@ -93,14 +82,12 @@ const InteractionSounds = () => {
     document.addEventListener("pointerdown", playClickSound);
     document.addEventListener("pointerdown", playPaletteSound);
     document.addEventListener("click", delayLinkNavigation);
-    document.addEventListener("mouseover", playPosterHoverSound);
     return () => {
       document.removeEventListener("pointerdown", playLinkSound);
       document.removeEventListener("pointerdown", playCardSound);
       document.removeEventListener("pointerdown", playClickSound);
       document.removeEventListener("pointerdown", playPaletteSound);
       document.removeEventListener("click", delayLinkNavigation);
-      document.removeEventListener("mouseover", playPosterHoverSound);
     };
   }, []);
 

@@ -2,17 +2,11 @@ import { useEffect, useRef, useState, type PointerEvent } from "react";
 import MobileSiteMenu from "./MobileSiteMenu";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import DesktopSiteHeader from "./DesktopSiteHeader";
+import { supabase } from "../lib/supabase";
 
 type Vibe = { id: number; type: "note" | "drawing"; content: string; name: string; color: string; rotation: number };
 
 const colors = ["#ffffff", "#f4f4f1", "#ffaaa2", "#ffd2a0", "#aee9bd", "#a9e9e4", "#a9d8f5", "#d0b6f6", "#f4acd7"];
-const starters: Vibe[] = [
-  { id: 1, type: "note", content: "Continue de créer ✦", name: "Anonyme", color: "#a9e9e4", rotation: -4 },
-  { id: 2, type: "note", content: "Une belle énergie vit ici.", name: "Visiteur", color: "#f4acd7", rotation: 3 },
-  { id: 3, type: "note", content: "Le design rend les idées visibles.", name: "Anonyme", color: "#ffd2a0", rotation: -2 },
-  { id: 4, type: "note", content: "Bravo Emmanuela !", name: "Ami·e du web", color: "#d0b6f6", rotation: 2 },
-];
-
 const VibeCheckPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -23,12 +17,36 @@ const VibeCheckPage = () => {
   const { enabled: soundEnabled, toggle: toggleSound } = useSoundEffects();
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
   const [language, setLanguage] = useState(() => localStorage.getItem("site-language") || "fr");
-  const [vibes, setVibes] = useState<Vibe[]>(() => {
-    try { return JSON.parse(localStorage.getItem("emmanuela-vibes") || "null") || starters; } catch { return starters; }
-  });
+  const [vibes, setVibes] = useState<Vibe[]>([]);
 
-  useEffect(() => localStorage.setItem("emmanuela-vibes", JSON.stringify(vibes)), [vibes]);
+  useEffect(() => {
+    if (!supabase) return;
+
+    const addVibe = (vibe: Vibe) => {
+      setVibes((current) => current.some((item) => item.id === vibe.id) ? current : [...current, vibe]);
+    };
+
+    void supabase
+      .from("vibes")
+      .select("id,type,content,name,color,rotation")
+      .order("created_at", { ascending: true })
+      .then(({ data, error }) => {
+        if (error) setPublishError("Impossible de charger les contributions.");
+        else setVibes((data ?? []) as Vibe[]);
+      });
+
+    const channel = supabase
+      .channel("public-vibes")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "vibes" }, (payload) => {
+        addVibe(payload.new as Vibe);
+      })
+      .subscribe();
+
+    return () => { void supabase.removeChannel(channel); };
+  }, []);
   useEffect(() => {
     const update = (event: Event) => setLanguage((event as CustomEvent<string>).detail);
     window.addEventListener("language-change", update);
@@ -68,11 +86,51 @@ const VibeCheckPage = () => {
     const p = point(event); context.strokeStyle = color; context.lineWidth = 7; context.lineTo(p.x, p.y); context.stroke();
   };
   const stopDraw = () => { drawing.current = false; };
-  const publish = () => {
-    const content = mode === "draw" ? canvasRef.current?.toDataURL("image/webp", .8) || "" : message.trim();
-    if (!content) return;
-    const next: Vibe = { id: Date.now(), type: mode === "draw" ? "drawing" : "note", content, name: name.trim() || "Anonyme", color: mode === "note" ? noteColor : "#ffffff", rotation: (vibes.length % 5 - 2) * 1.5 };
-    setVibes((items) => [...items, next]); setMessage(""); setName(""); setMode("board");
+  const publish = async () => {
+    if (!supabase || isPublishing) {
+      if (!supabase) setPublishError("Le Vibe Check n’est pas encore connecté à la base publique.");
+      return;
+    }
+
+    setIsPublishing(true);
+    setPublishError("");
+
+    try {
+      let content = message.trim().slice(0, 2000);
+      const type: Vibe["type"] = mode === "draw" ? "drawing" : "note";
+
+      if (type === "drawing") {
+        const dataUrl = canvasRef.current?.toDataURL("image/webp", 0.8);
+        if (!dataUrl) return;
+        const drawing = await fetch(dataUrl).then((response) => response.blob());
+        const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.webp`;
+        const { error: uploadError } = await supabase.storage.from("vibe-drawings").upload(path, drawing, {
+          contentType: "image/webp",
+          cacheControl: "31536000",
+        });
+        if (uploadError) throw uploadError;
+        content = supabase.storage.from("vibe-drawings").getPublicUrl(path).data.publicUrl;
+      }
+
+      if (!content) return;
+      const { data, error } = await supabase.from("vibes").insert({
+        type,
+        content,
+        name: name.trim().slice(0, 50) || "Anonyme",
+        color: type === "note" ? noteColor : "#ffffff",
+        rotation: (vibes.length % 5 - 2) * 1.5,
+      }).select("id,type,content,name,color,rotation").single();
+      if (error) throw error;
+
+      setVibes((current) => current.some((item) => item.id === data.id) ? current : [...current, data as Vibe]);
+      setMessage("");
+      setName("");
+      setMode("board");
+    } catch {
+      setPublishError("La publication a échoué. Réessaie dans un instant.");
+    } finally {
+      setIsPublishing(false);
+    }
   };
   const toggleTheme = () => {
     setDarkMode((current) => {
@@ -101,6 +159,7 @@ const VibeCheckPage = () => {
           <p>&gt; {language === "en" ? "Draw something or leave me a note. Be kind <3" : "Dessine quelque chose ou laisse-moi un mot. Restons bienveillants <3"}</p>
           <p>{vibes.length} {language === "en" ? "real contributions" : "contributions réelles"}</p>
         </div>
+        {publishError && <p role="alert" className="relative z-20 px-5 py-3 text-xs text-[#ffaaa2]">{publishError}</p>}
         <div className="grid auto-rows-[190px] grid-cols-2 gap-0 p-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7">
           {vibes.map((vibe) => (
             <article key={vibe.id} className="relative -m-2 flex flex-col justify-between overflow-hidden p-5 text-black shadow-[0_5px_18px_rgba(0,0,0,.14)] transition-transform duration-300 hover:z-20 hover:scale-105" style={{ backgroundColor: vibe.color, transform: `rotate(${vibe.rotation}deg)` }}>
@@ -128,7 +187,7 @@ const VibeCheckPage = () => {
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder={language === "en" ? "Your name here" : "Ton nom ici"} className="mt-2 w-full bg-transparent font-sans text-lg outline-none placeholder:text-black/35" />
           </div>
           <button onClick={() => setMode("board")} className="fixed bottom-7 left-5 text-2xl md:left-10 md:text-5xl">{language === "en" ? "Close" : "Fermer"} [esc]</button>
-          <button onClick={publish} className="fixed bottom-7 right-5 text-2xl md:right-10 md:text-5xl">{language === "en" ? "Publish" : "Publier"} ↵</button>
+          <button disabled={isPublishing} onClick={() => void publish()} className="fixed bottom-7 right-5 text-2xl disabled:cursor-wait disabled:opacity-50 md:right-10 md:text-5xl">{isPublishing ? (language === "en" ? "Publishing…" : "Publication…") : (language === "en" ? "Publish" : "Publier")} ↵</button>
         </div>
       )}
     </main>

@@ -91,20 +91,12 @@ const Hero = () => {
       }, 1000);
       gsap.to(backgroundVideoRef.current, { autoAlpha: 1 });
       const { clientX, clientY } = e;
-      const maxOffsetX = 100;
-      const maxOffsetY = 200;
-
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-
-      const constrainedX = Math.min(Math.max(clientX, centerX - maxOffsetX), centerX + maxOffsetX);
-      const constrainedY = Math.min(Math.max(clientY, centerY - maxOffsetY), centerY + maxOffsetY);
 
       const polygonClipPath = `polygon(
-        ${Math.max(constrainedX - 100, 0)}px ${Math.max(constrainedY - 100, 0)}px,
-        ${Math.min(constrainedX + 100, window.innerWidth)}px ${Math.max(constrainedY - 100, 0)}px,
-        ${Math.min(constrainedX + 100, window.innerWidth)}px ${Math.min(constrainedY + 100, window.innerHeight)}px,
-        ${Math.max(constrainedX - 100, 0)}px ${Math.min(constrainedY + 100, window.innerHeight)}px
+        ${Math.max(clientX - 100, 0)}px ${Math.max(clientY - 100, 0)}px,
+        ${Math.min(clientX + 100, window.innerWidth)}px ${Math.max(clientY - 100, 0)}px,
+        ${Math.min(clientX + 100, window.innerWidth)}px ${Math.min(clientY + 100, window.innerHeight)}px,
+        ${Math.max(clientX - 100, 0)}px ${Math.min(clientY + 100, window.innerHeight)}px
       )`;
       gsap.to(backgroundVideoRef.current, {
         polygonClipPath,
@@ -117,7 +109,7 @@ const Hero = () => {
     heroRef.current.addEventListener("mousemove", handleMouseMove);
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      heroRef.current?.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
   return (
