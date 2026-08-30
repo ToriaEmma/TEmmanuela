@@ -76,7 +76,7 @@ const MiniRunner = () => {
     if (!canvas) return;
     const context = canvas.getContext("2d");
     if (!context) return;
-    gameOverAudioRef.current = new Audio("/gameover.mp3");
+    gameOverAudioRef.current = new Audio("/gameover.wav");
     gameOverAudioRef.current.preload = "auto";
     gameOverAudioRef.current.load();
 
