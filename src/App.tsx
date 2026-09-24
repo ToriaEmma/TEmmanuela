@@ -167,9 +167,9 @@ function PageContent() {
               {/* leading-[0.9] sur du 14vw : la boite de ligne depasse largement
                   les glyphes, d'ou le calage vertical manuel des motifs. */}
               <p className="flex items-center justify-center gap-[19vw]">
-                <img src="/motif.gif" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
+                <img src="/motif.webp" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
                 ui / ux
-                <img src="/motif.gif" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
+                <img src="/motif.webp" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
               </p>
             </div>
           </div>

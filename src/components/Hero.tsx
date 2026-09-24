@@ -209,9 +209,9 @@ const Hero = () => {
             desktop (voir App.tsx) : la version mobile les perdait, le bloc qui
             les portait etant masque sous md. */}
         <p className="flex items-center justify-center gap-[7vw] text-white/85 md:hidden">
-          <img src="/motif.gif" alt="" aria-hidden="true" className="h-[18px] w-auto" />
+          <img src="/motif.webp" alt="" aria-hidden="true" className="h-[18px] w-auto" />
           ui / ux
-          <img src="/motif.gif" alt="" aria-hidden="true" className="h-[18px] w-auto" />
+          <img src="/motif.webp" alt="" aria-hidden="true" className="h-[18px] w-auto" />
         </p>
       </div>
     </div>

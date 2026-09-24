@@ -8,7 +8,7 @@
     <!-- Anton porte le titre du hero : c'est lui le LCP. Sans preload il
          n'est demande qu'apres le parse du CSS, et le titre s'affiche
          d'abord dans la police de secours avant de sauter. -->
-    <link rel="preload" href="/fonts/Anton-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/fonts/Anton-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <!-- Premier visuel du loader : il apparait dans les toutes premieres
          frames de l'animation, donc on ne veut pas l'attendre. -->
     <link rel="preload" href="/loader/1.webp" as="image" fetchpriority="high" />
@@ -20,7 +20,7 @@
          site se monte : plus rien ne bouge sous le doigt. -->
     <link rel="preload" href="/title3.png" as="image" fetchpriority="high" />
     <link rel="preload" href="/clouds_2.webp" as="image" />
-    <link rel="preload" href="/motif.gif" as="image" />
+    <link rel="preload" href="/motif.webp" as="image" />
     <link rel="preload" href="/runner.gif" as="image" />
   </head>
   <body>
