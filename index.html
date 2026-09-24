@@ -5,6 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Emmanuela — Portfolio</title>
+    <!-- Anton porte le titre du hero : c'est lui le LCP. Sans preload il
+         n'est demande qu'apres le parse du CSS, et le titre s'affiche
+         d'abord dans la police de secours avant de sauter. -->
+    <link rel="preload" href="/fonts/Anton-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <!-- Premier visuel du loader : il apparait dans les toutes premieres
+         frames de l'animation, donc on ne veut pas l'attendre. -->
+    <link rel="preload" href="/loader/1.webp" as="image" fetchpriority="high" />
+    <!-- Visuels du hero. Sans ces preloads ils n'etaient demandes qu'APRES la
+         fin du loader (mesure : ~900ms apres son retrait), donc pile au
+         moment ou l'utilisateur commence a defiler. Leur arrivee changeait la
+         hauteur de la page en plein geste et le scroll accrochait.
+         Chargés pendant les 5,6s du loader, ils sont deja en cache quand le
+         site se monte : plus rien ne bouge sous le doigt. -->
+    <link rel="preload" href="/title3.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/clouds_2.webp" as="image" />
+    <link rel="preload" href="/motif.gif" as="image" />
+    <link rel="preload" href="/runner.gif" as="image" />
   </head>
   <body>
     <div id="root"></div>

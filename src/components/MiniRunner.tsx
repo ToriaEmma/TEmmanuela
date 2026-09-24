@@ -140,7 +140,7 @@ const MiniRunner = () => {
         if (catRight > obstacleLeft && catLeft < obstacleRight && catBottom > ground - 12) {
           game.running = false;
           game.over = true;
-          setStatus("PERDU — CLIQUE POUR REJOUER");
+          setStatus("PERDU. CLIQUE POUR REJOUER");
           if (soundEffectsEnabled()) {
             const sound = gameOverAudioRef.current;
             if (sound) {

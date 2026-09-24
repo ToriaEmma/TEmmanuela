@@ -21,8 +21,10 @@ const VibeCheckPage = () => {
   const [mode, setMode] = useState<"board" | "draw" | "note">("board");
   const [color, setColor] = useState("#101010");
   const [noteColor, setNoteColor] = useState("#ffffff");
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("color-theme") !== "light");
-  const { enabled: soundEnabled, toggle: toggleSound } = useSoundEffects();
+  // Le bandeau son/couleur est retire : le theme suit simplement le choix
+  // enregistre ailleurs sur le site, sans bascule propre a cette page.
+  const [darkMode] = useState(() => localStorage.getItem("color-theme") !== "light");
+  useSoundEffects();
   const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
@@ -142,32 +144,18 @@ const VibeCheckPage = () => {
       setIsPublishing(false);
     }
   };
-  const toggleTheme = () => {
-    setDarkMode((current) => {
-      const next = !current;
-      document.documentElement.classList.toggle("light-site", !next);
-      localStorage.setItem("color-theme", next ? "dark" : "light");
-      return next;
-    });
-  };
 
   return (
-    <main className={`min-h-screen p-3 font-mono transition-colors duration-500 md:p-6 ${darkMode ? "bg-[#101010] text-[#d3d0c5]" : "bg-[#f7f7f5] text-[#101010]"}`}>
+    <main className={`min-h-screen px-5 font-mono transition-colors duration-500 md:px-8 ${darkMode ? "bg-[#101010] text-[#d3d0c5]" : "bg-[#f7f7f5] text-[#101010]"}`}>
       <MobileSiteMenu />
-      <DesktopSiteHeader active="vibe" />
-      <header className="mb-6 flex items-center justify-end">
-        <div className={`flex items-center rounded-full px-4 py-3 text-[10px] shadow-sm transition-colors md:text-sm ${darkMode ? "bg-[#292929] text-white" : "bg-white text-black"}`}>
-          <button type="button" onClick={toggleSound}>▦ {language === "en" ? `SOUND [${soundEnabled ? "ON" : "OFF"}]` : `SON [${soundEnabled ? "ACTIF" : "COUPÉ"}]`}&nbsp;&nbsp;</button>
-          <button data-theme-sound type="button" onClick={toggleTheme} className="underline decoration-transparent underline-offset-4 transition-all hover:decoration-current">
-            {language === "en" ? "COLOR" : "COULEUR"}: {darkMode ? "#FFFFFF" : "#101010"}
-          </button>
-        </div>
-      </header>
+      <div className={darkMode ? "" : "vibe-header--light"}><DesktopSiteHeader active="vibe" /></div>
+      {/* En mobile la barre nom/heure flotte par-dessus le haut de page :
+          le cadre descend pour ne plus passer dessous. */}
+      <div className="mb-16 md:mb-6" />
 
       <section className={`relative min-h-[calc(100vh-110px)] overflow-hidden shadow-[0_0_25px_rgba(0,0,0,.06)] transition-colors duration-500 ${darkMode ? "bg-[#181818]" : "bg-white"}`}>
         <div className={`relative z-20 flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4 text-[10px] backdrop-blur transition-colors md:text-sm ${darkMode ? "border-white/10 bg-[#181818]/90 text-white/55" : "border-black/10 bg-white/90 text-black/45"}`}>
           <p>&gt; {language === "en" ? "Draw something or leave me a note. Be kind <3" : "Dessine quelque chose ou laisse-moi un mot. Restons bienveillants <3"}</p>
-          <p>{vibes.length} {language === "en" ? "real contributions" : "contributions réelles"}</p>
         </div>
         {publishError && <p role="alert" className="relative z-20 px-5 py-3 text-xs text-[#ffaaa2]">{publishError}</p>}
         <div className="grid auto-rows-[190px] grid-cols-2 gap-0 p-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7">

@@ -1,8 +1,8 @@
-import ColorThemeToggle from "./ColorThemeToggle";
 import LanguageToggle, { LocalizedText } from "./LanguageToggle";
 import MobileProjectHeader from "./MobileProjectHeader";
 import MoreProjects from "./MoreProjects";
 import DesktopSiteHeader from "./DesktopSiteHeader";
+import LineReveal from "./LineReveal";
 
 type ProjectShowcaseProps = {
   title: string;
@@ -59,6 +59,47 @@ const ProjectShowcase = ({
       <img loading="lazy" decoding="async" src={hero} alt={title} className="block h-auto w-full" />
     </section>
 
+    <section className="bg-[#f3f1eb] px-5 py-16 text-[#101010] md:px-8 md:py-24">
+      <div className="mx-auto grid max-w-[1440px] gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:gap-24">
+        <div className="max-w-[760px]">
+          <p className="mb-8 font-mono text-[10px] uppercase tracking-[0.12em] text-black/45">
+            <LocalizedText fr="Projet, description" en="Project, description" />
+          </p>
+          {/* La description se revele ligne par ligne : chaque ligne remonte
+              dans sa propre fenetre, en decale. Les deux langues coexistent
+              dans le DOM (le CSS n'en montre qu'une), donc chacune a son
+              propre bloc. */}
+          <div className="max-w-[760px] text-3xl font-medium uppercase leading-[1.02] tracking-[-0.04em] md:text-5xl">
+            <span className="lang-fr">
+              <LineReveal as="h2">{intro}</LineReveal>
+            </span>
+            <span className="lang-en">
+              <LineReveal as="h2">{introEn}</LineReveal>
+            </span>
+          </div>
+        </div>
+
+        <div className="self-end">
+          <ul className="border-t border-black/20">
+            {[
+              ["Direction artistique", "Art direction"],
+              ["Identité visuelle", "Visual identity"],
+              ["Déclinaisons & supports", "Applications & assets"],
+            ].map(([fr, en], index) => (
+              <li key={fr} className="flex items-center justify-between gap-4 border-b border-black/20 py-3 text-xs uppercase tracking-[0.04em]">
+                <span className="flex items-center gap-3"><span aria-hidden="true" className="text-sm">✳</span><LocalizedText fr={fr} en={en} /></span>
+                <span className="font-mono text-black/45">{String(index + 1).padStart(2, "0")}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-16 text-[92px] font-medium leading-[0.78] tracking-[-0.07em] md:text-[122px]">
+            {identityImages.length + applicationImages.length}
+            <span className="ml-2 align-baseline text-2xl font-normal tracking-normal"><LocalizedText fr="visuels" en="assets" /></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
     <div
       id="about"
       className="grid gap-12 px-5 py-20 md:px-8 lg:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]"
@@ -97,6 +138,7 @@ const ProjectShowcase = ({
                     alt={`${title} — application ${index + 1}`}
                     className="block h-auto w-full"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}

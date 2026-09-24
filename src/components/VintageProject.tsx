@@ -1,4 +1,3 @@
-import ColorThemeToggle from "./ColorThemeToggle";
 import LanguageToggle, { LocalizedText } from "./LanguageToggle";
 import MobileProjectHeader from "./MobileProjectHeader";
 import MoreProjects from "./MoreProjects";
@@ -115,6 +114,7 @@ const VintageProject = () => {
                       alt={`Application Vintage ${image}`}
                       className="aspect-[4861/6250] size-full object-cover"
                       loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 ),

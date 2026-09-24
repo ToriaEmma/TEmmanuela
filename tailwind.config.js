@@ -3,6 +3,12 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      screens: {
+        // Bascule colonne -> bande horizontale du ruban projets, comme sur la
+        // reference : en dessous il n'y a pas la largeur pour qu'un balayage
+        // du proche au lointain se lise.
+        s: "650px",
+      },
       fontFamily: {
         zentry: ["zentry", "sans-serif"],
         general: ["general", "sans-serif"],

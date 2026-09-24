@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { LocalizedText } from "./LanguageToggle";
-import MiniRunner from "./MiniRunner";
-import ColorThemeToggle from "./ColorThemeToggle";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 
 const bubbleWords = [
@@ -218,8 +216,6 @@ const Footer = () => {
 
   return (
     <footer className="theme-surface relative z-10 flex min-h-[72vh] w-screen flex-col overflow-hidden bg-black px-5 pb-8 pt-[15px] font-mono text-[#d3d0c5] md:min-h-[68vh] md:px-8 md:pb-10 md:pt-4">
-      <MiniRunner />
-      
       {/* Noise Overlay */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.02] mix-blend-overlay z-0" 
@@ -259,7 +255,6 @@ const Footer = () => {
           <div><a href="https://www.linkedin.com/in/Emmanuela%20TODEDJI" target="_blank" rel="noreferrer">LinkedIn</a><a className="block" href="https://wa.me/22968678025" target="_blank" rel="noreferrer">WhatsApp</a></div>
           <div>
             <button type="button" onClick={toggleSound} className="block uppercase"><LocalizedText fr={`Son [${soundEnabled ? "On" : "Off"}]`} en={`Sound [${soundEnabled ? "On" : "Off"}]`} /></button>
-            <ColorThemeToggle />
           </div>
           <div className="text-left md:text-right"><p><LocalizedText fr="Chargement du site" en="Loading site" /></p><p><LocalizedText fr="Patientez ;)" en="Please wait ;)" /></p></div>
         </div>

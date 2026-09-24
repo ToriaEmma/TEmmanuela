@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import LanguageToggle, { LocalizedText } from "./LanguageToggle";
+import { useRef, useState } from "react";
+import { LocalizedText } from "./LanguageToggle";
 import MobileSiteMenu from "./MobileSiteMenu";
 import Footer from "./Footer";
-import ColorThemeToggle from "./ColorThemeToggle";
-import { useSoundEffects, soundEffectsEnabled } from "../hooks/useSoundEffects";
+import { soundEffectsEnabled } from "../hooks/useSoundEffects";
 import DesktopSiteHeader from "./DesktopSiteHeader";
-import { navigateTo } from "../utils/navigation";
 
 const polaroidPhotos = [
   "/REVOLU/paro/Profil.webp",
@@ -13,22 +11,8 @@ const polaroidPhotos = [
 ];
 
 const AboutPage = () => {
-  const [time, setTime] = useState("");
   const [ejectedPhotos, setEjectedPhotos] = useState<number[]>([]);
   const cameraAudioRef = useRef<HTMLAudioElement>(null);
-  const { enabled: soundEnabled, toggle: toggleSound } = useSoundEffects();
-
-  useEffect(() => {
-    const update = () => setTime(new Intl.DateTimeFormat("en-GB", {
-      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true,
-      timeZone: "Africa/Porto-Novo",
-    }).format(new Date()).toUpperCase());
-    update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const navClass = "relative transition-all duration-300 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-current after:transition-transform hover:tracking-[0.08em] hover:after:origin-left hover:after:scale-x-100";
 
   const ejectNextPhoto = () => {
     if (soundEffectsEnabled() && cameraAudioRef.current) {
@@ -45,24 +29,6 @@ const AboutPage = () => {
     <main className="theme-surface min-h-screen bg-black px-5 font-mono text-[#d3d0c5] md:px-8">
       <MobileSiteMenu />
       <DesktopSiteHeader active="about" />
-      <header className="grid gap-6 border-b border-white/15 py-5 text-[10px] uppercase md:hidden">
-        <button type="button" onClick={() => navigateTo("/")} className="text-left font-bold">
-          Emmanuela©<span className="block font-normal">{time} GMT+1</span>
-        </button>
-        <nav className="flex flex-wrap items-start gap-x-8 gap-y-2">
-          <a href="/projects" className={navClass}>Projets [14]</a>
-          <span className="line-through">À propos</span>
-          <a href="/expertise" className={navClass}>Expertises</a>
-          <a href="/archive" className={navClass}>Archive</a>
-          <a href="/vibe-check" className={navClass}>Vibe-check</a>
-          <a href="/contact" className={navClass}>Contact</a>
-        </nav>
-        <div className="flex items-start gap-4 md:justify-end">
-          <button type="button" onClick={toggleSound}><LocalizedText fr={`Son [${soundEnabled ? "Actif" : "Coupé"}]`} en={`Sound [${soundEnabled ? "On" : "Off"}]`} /></button>
-          <ColorThemeToggle />
-          <LanguageToggle />
-        </div>
-      </header>
 
       <section className="mt-10 grid gap-12 text-[12px] leading-relaxed md:mt-28 md:grid-cols-[0.72fr_1.55fr_1.2fr_1.2fr] md:gap-10 md:text-xs">
         <div className="hidden space-y-24 text-[10px] uppercase md:block md:text-[11px]">
@@ -102,8 +68,9 @@ const AboutPage = () => {
 
         </div>
 
-        <div className="order-first md:order-none">
-          <p className="mb-10 text-center text-[11px] uppercase md:hidden">Une idée arrive.</p>
+        {/* pt-10 en mobile : la ligne "Une idee arrive." qui precedait portait
+            un mb-10, et la supprimer avait remonte l'appareil photo d'autant. */}
+        <div className="order-first pt-10 md:order-none md:pt-0">
           <div className="relative left-1/2 z-20 -mt-12 aspect-square w-[125%] max-w-[650px] -translate-x-1/2 md:-mt-16 md:w-[140%]">
             <audio ref={cameraAudioRef} src="/click.mp3" preload="auto" />
             <img loading="lazy" decoding="async" src="/REVOLU/palo.webp" alt="Appareil photo Polaroid" className="about-camera size-full object-contain" />
@@ -183,7 +150,7 @@ const AboutPage = () => {
             <h2 className="mb-6 text-[11px] uppercase md:text-xs">// Formation</h2>
             <div className="space-y-5 font-sans text-[13px] md:text-sm">
               <div className="flex justify-between gap-6"><p>Bachelor en ingénierie logicielle<br /><span className="opacity-55">Epitech Bénin, Saint-Michel</span></p><span>Depuis 2023</span></div>
-              <div className="flex justify-between gap-6"><p>Baccalauréat Série B<br /><span className="opacity-55">Collège Catholique Don Zefirino Agostini, Cocotomey</span></p><span>2022–2023</span></div>
+              <div className="flex justify-between gap-6"><p>Baccalauréat Série B<br /><span className="opacity-55">Collège Catholique Don Zefirino Agostini, Cocotomey</span></p><span>2022 / 2023</span></div>
             </div>
           </section>
           <section>

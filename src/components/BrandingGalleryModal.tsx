@@ -8,21 +8,27 @@ interface BrandingGalleryModalProps {
   isOpen: boolean;
   onClose: () => void;
   images?: { src: string; title: string }[];
+  /** Ouvre directement la premiere affiche en grand plutot que la grille. */
+  openFirst?: boolean;
 }
 
 export const brandingImages = [
-  { src: "/ola/Frame%201.webp", title: "Affiche 01" },
-  { src: "/ola/IMG_2356.webp", title: "Affiche 02" },
-  { src: "/ola/IMG_7795.webp", title: "Affiche 03" },
-  { src: "/ola/IMG_7798.webp", title: "Affiche 04" },
-  { src: "/ola/IMG_7799.webp", title: "Affiche 05" },
-  { src: "/ola/IMG_8564.webp", title: "Affiche 06" },
-  { src: "/ola/IMG_8565.webp", title: "Affiche 07" },
-  { src: "/ola/gummy.webp", title: "Affiche 08" },
+  { src: "/ola/IMG_2356.webp", title: "Affiche 01" },
+  { src: "/ola/IMG_7795.webp", title: "Affiche 02" },
+  { src: "/ola/IMG_7798.webp", title: "Affiche 03" },
+  { src: "/ola/IMG_7799.webp", title: "Affiche 04" },
+  { src: "/ola/IMG_8564.webp", title: "Affiche 05" },
+  { src: "/ola/IMG_8565.webp", title: "Affiche 06" },
+  { src: "/ola/gummy.webp", title: "Affiche 07" },
 ];
 
-const BrandingGalleryModal = ({ isOpen, onClose, images = brandingImages }: BrandingGalleryModalProps) => {
+const BrandingGalleryModal = ({ isOpen, onClose, images = brandingImages, openFirst = false }: BrandingGalleryModalProps) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelectedIdx(openFirst ? 0 : null);
+  }, [isOpen, openFirst]);
   const [lightGrid, setLightGrid] = useState(false);
   const [mounted, setMounted] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -33,7 +39,7 @@ const BrandingGalleryModal = ({ isOpen, onClose, images = brandingImages }: Bran
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") selectedIdx === null ? onClose() : setSelectedIdx(null);
+      if (event.key === "Escape") selectedIdx === null || openFirst ? onClose() : setSelectedIdx(null);
       if (selectedIdx !== null && event.key === "ArrowRight") {
         setSelectedIdx((selectedIdx + 1) % images.length);
       }
@@ -47,7 +53,7 @@ const BrandingGalleryModal = ({ isOpen, onClose, images = brandingImages }: Bran
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [images.length, isOpen, onClose, selectedIdx]);
+  }, [images.length, isOpen, onClose, openFirst, selectedIdx]);
 
   if (!mounted || !isOpen) return null;
 
@@ -138,7 +144,7 @@ const BrandingGalleryModal = ({ isOpen, onClose, images = brandingImages }: Bran
             </div>
           )}
 
-          <button type="button" onClick={() => setSelectedIdx(null)} className="fixed bottom-6 left-5 z-20 text-2xl md:bottom-10 md:left-16 md:text-5xl">
+          <button type="button" onClick={() => (openFirst ? onClose() : setSelectedIdx(null))} className="fixed bottom-6 left-5 z-20 text-2xl md:bottom-10 md:left-16 md:text-5xl">
             <LocalizedText fr="Fermer [esc]" en="Close [esc]" />
           </button>
           <div className="fixed bottom-6 right-5 z-20 flex items-center gap-4 text-2xl md:bottom-10 md:right-16 md:text-5xl">

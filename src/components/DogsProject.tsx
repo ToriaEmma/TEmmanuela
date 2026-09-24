@@ -1,4 +1,3 @@
-import ColorThemeToggle from "./ColorThemeToggle";
 import LanguageToggle, { LocalizedText } from "./LanguageToggle";
 import MobileProjectHeader from "./MobileProjectHeader";
 import MoreProjects from "./MoreProjects";
@@ -77,6 +76,7 @@ const DogsProject = () => {
                     alt={`Application Dogs ${index + 1}`}
                     className="block h-auto w-full"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}

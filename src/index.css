@@ -65,7 +65,223 @@ body .font-mono * {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
 }
 
+/* Project detail pages: keep the opening frame compact like the reference
+   viewer instead of letting the project title and hero take over the screen. */
+.theme-project > section:first-of-type {
+  padding-top: clamp(5rem, 11vh, 7rem) !important;
+  padding-bottom: clamp(1.5rem, 4vh, 2.75rem) !important;
+}
+
+.theme-project > section:first-of-type h1 {
+  font-size: clamp(2.75rem, 6vw, 5rem) !important;
+  line-height: 0.94 !important;
+}
+
+.theme-project > section:nth-of-type(2) > img {
+  max-height: min(72svh, 760px);
+  width: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 767px) {
+  .theme-project > section:nth-of-type(2) > img {
+    max-height: 58svh;
+  }
+}
+
+/* `body *` ci-dessus impose circular-web avec !important, ce qui bat meme les
+   styles inline : sans cette exception, le titre du hero et son second mot
+   retombent en circular-web au lieu de la police d'affichage zentry. */
+body .hero-display,
+body .hero-display * {
+  /* La meme police droite que les titres de projets (.work-title), pour que
+     le hero et les planches parlent d'une seule voix. */
+  font-family: "anton", sans-serif !important;
+}
+
 .lang-en { display: none; }
+/* Isolate the project viewer from the archive's monospace typography. */
+body .project-viewer,
+body .project-viewer * {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.project-viewer-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid #494949;
+  pointer-events: none;
+}
+/* Le cadre des visuels, repris des pages projet dediees : fond blanc et
+   coins arrondis (rounded-lg), et non plus transparent -- c'est ce fond qui
+   detache chaque visuel du noir du panneau. */
+.project-viewer .project-image-frame {
+  display: block;
+  background: #ffffff;
+  padding: 0;
+  aspect-ratio: auto;
+  /* Un liseré clair sur chaque cadre : les visuels sombres (captures de
+     sites, mockups sur fond noir) se confondaient avec le noir du panneau,
+     et leur bord disparaissait. */
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.project-viewer .project-image-frame img {
+  max-width: 100%;
+  max-height: none;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  object-fit: contain;
+  box-shadow: none;
+}
+.project-viewer .project-image-group--paired {
+  background: transparent;
+  border-radius: 16px;
+  padding: 0;
+  gap: 10px;
+  align-items: start;
+}
+.project-viewer .project-image-group--paired .project-image-frame {
+  aspect-ratio: auto;
+  padding: 0;
+}
+.project-viewer .project-image-group--paired img { height: auto; }
+.project-viewer .project-image-group:not(.project-image-group--logos):not(.project-image-group--natural) .project-image-frame img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+}
+.project-viewer .project-image-group--logos {
+  padding: 0;
+  background: transparent;
+  gap: 0.75rem;
+  align-items: start;
+}
+.project-viewer .project-image-group--logos .project-image-frame {
+  display: block;
+  aspect-ratio: auto;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+.project-viewer .project-image-group--logos img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  box-shadow: none;
+}
+.project-viewer .project-image-group--logos .project-logo-variant {
+  display: flex;
+  aspect-ratio: 1;
+  padding: 8%;
+}
+.project-viewer .project-image-group--compact-logos {
+  /* Each tile matches the width of a tile in Gummy's three-column row. */
+  width: calc((100% - 20px) * 2 / 3 + 10px);
+  margin-inline: auto;
+}
+@media (max-width: 723px) {
+  .project-viewer .project-image-group--compact-logos { width: 100%; }
+}
+.project-viewer .project-logo-variant img {
+  height: 100%;
+  object-fit: contain;
+}
+.project-viewer .project-image-group--natural .project-image-frame {
+  display: block;
+  aspect-ratio: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+.project-viewer .project-image-group--natural img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  box-shadow: none;
+}
+.project-progress-capsule {
+  padding: 13px 11px;
+  border-radius: 30px;
+  border: 1px solid #333;
+  background: #202020e8;
+  backdrop-filter: blur(12px);
+}
+body .project-viewer .modal-title {
+  font-family: "anton", sans-serif !important;
+  font-size: clamp(42px, 4.5vw, 68px);
+  line-height: 1.2;
+  color: #ffffff;
+}
+.project-viewer .project-actions {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ffffff24;
+  border-radius: 22px;
+  background: #202020;
+  box-shadow: inset 0 0 12px #ffffff16;
+  backdrop-filter: blur(18px);
+}
+.project-viewer .project-actions > :is(button, a) {
+  position: relative;
+  isolation: isolate;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  border: 0;
+  background: transparent;
+  color: white;
+  box-shadow: none;
+  transition: transform .2s, filter .2s;
+}
+.project-viewer .project-actions > :is(button, a)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 15px;
+  background: linear-gradient(#141414, #414141);
+  box-shadow: inset 0 0 10px #ffffff65, 0 0 7px #ffffff28;
+  filter: blur(4px);
+}
+.project-viewer .project-actions > a::before {
+  background: linear-gradient(#b4b4b4, #909090);
+  box-shadow: 0 0 9px #ffffff80, inset 0 0 8px #fff5;
+}
+.project-viewer .project-actions > :is(button, a):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+.project-viewer .project-actions svg { width: 38px; height: 38px; }
+@media (max-width: 640px) {
+  .project-viewer .project-image-group--paired { padding: 0; gap: 10px; }
+}
+.project-viewer .modal-meta {
+  font-size: 14px;
+}
+.project-viewer .modal-meta > span {
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.project-viewer .modal-meta svg {
+  width: 16px;
+  height: 16px;
+}
+.project-viewer [data-modal-scroll] {
+  scrollbar-width: none;
+}
+.project-viewer [data-modal-scroll]::-webkit-scrollbar {
+  display: none;
+}
 html[data-language="en"] .lang-fr { display: none; }
 html[data-language="en"] .lang-en { display: inline; }
 
@@ -185,7 +401,58 @@ html.light-site .expertise-deck .expertise-card--dark :is(h2, p, span) {
 }
 
 html.light-site .floating-nav {
-  background-color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* Le header est TOUJOURS blanc, quel que soit le mode de couleur et qu'il
+   flotte ou non. Cette regle vient apres toutes les variantes light-site /
+   floating-nav plus haut, qui repassaient certains elements en #101010. */
+.hero-desktop-nav,
+.hero-desktop-nav a,
+.hero-desktop-nav button,
+.hero-desktop-nav div,
+.hero-desktop-nav span,
+.hero-desktop-nav .hero-brand,
+.hero-desktop-nav .hero-brand span,
+.hero-desktop-nav .hero-sound-label,
+.hero-desktop-nav .hero-sound-label .hero-sound-initial,
+.secondary-desktop-nav,
+.secondary-desktop-nav a,
+.secondary-desktop-nav button,
+.secondary-desktop-nav div,
+.secondary-desktop-nav span,
+.secondary-desktop-nav .hero-brand,
+.secondary-desktop-nav .hero-brand span,
+.secondary-desktop-nav .hero-sound-label,
+.secondary-desktop-nav .hero-sound-label .hero-sound-initial,
+html.light-site .hero-desktop-nav,
+html.light-site .hero-desktop-nav a,
+html.light-site .hero-desktop-nav button,
+html.light-site .hero-desktop-nav div,
+html.light-site .hero-desktop-nav span,
+html.light-site .hero-desktop-nav .hero-brand,
+html.light-site .hero-desktop-nav .hero-brand span,
+html.light-site .hero-desktop-nav .hero-sound-label,
+html.light-site .hero-desktop-nav .hero-sound-label .hero-sound-initial,
+html.light-site .secondary-desktop-nav,
+html.light-site .secondary-desktop-nav a,
+html.light-site .secondary-desktop-nav button,
+html.light-site .secondary-desktop-nav div,
+html.light-site .secondary-desktop-nav span,
+html.light-site .secondary-desktop-nav .hero-brand,
+html.light-site .secondary-desktop-nav .hero-brand span,
+html.light-site .secondary-desktop-nav .hero-sound-label,
+html.light-site .secondary-desktop-nav .hero-sound-label .hero-sound-initial,
+html.light-site .floating-nav .hero-desktop-nav,
+html.light-site .floating-nav .hero-desktop-nav a,
+html.light-site .floating-nav .hero-desktop-nav button,
+html.light-site .floating-nav .hero-desktop-nav div,
+html.light-site .floating-nav .hero-desktop-nav span,
+html.light-site .floating-nav .hero-desktop-nav .hero-brand,
+html.light-site .floating-nav .hero-desktop-nav .hero-brand span,
+html.light-site .floating-nav .hero-desktop-nav .hero-sound-label,
+html.light-site .floating-nav .hero-desktop-nav .hero-sound-label .hero-sound-initial {
+  color: #ffffff !important;
 }
 
 /* Once the homepage navigation floats, it follows the active page theme. */
@@ -289,26 +556,50 @@ html:not(.light-site) [class~="text-[#7d7a73]"] {
   @font-face {
     font-family: "circular-web";
     src: url("/fonts/circularweb-book.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "general";
     src: url("/fonts/general.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "robert-medium";
     src: url("/fonts/robert-medium.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "robert-regular";
     src: url("/fonts/robert-regular.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "zentry";
     src: url("/fonts/zentry-regular.woff2") format("woff2");
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "alex-brush";
+    src: url("/fonts/AlexBrush-Regular.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "anton";
+    src: url("/fonts/Anton-Regular.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "playfair-italic";
+    src: url("/fonts/PlayfairDisplay-Italic.ttf") format("truetype");
+    font-style: italic;
+    font-display: swap;
   }
 }
 
@@ -328,8 +619,10 @@ html:not(.light-site) [class~="text-[#7d7a73]"] {
     @apply relative cursor-pointer transition-all duration-300 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-black after:transition-transform after:duration-300 hover:translate-x-2 hover:tracking-[0.12em] hover:after:origin-bottom-left hover:after:scale-x-100 active:translate-x-2 active:tracking-[0.12em] active:after:scale-x-100;
   }
 
+  /* Le header reste transparent quand on remonte : plus de barre noire, plus
+     d'arrondi ni de bordure -- seul le repositionnement est conserve. */
   .floating-nav {
-    @apply bg-black rounded-lg border;
+    @apply bg-transparent;
   }
 
   .absolute-center {
@@ -464,6 +757,20 @@ html:not(.light-site) [class~="text-[#7d7a73]"] {
 
 .mobile-nav-trigger__mark {
   background-color: #111111;
+  color: #ffffff;
+}
+
+/* Variante claire du declencheur, posee sur le hero : le bouton noir par
+   defaut y est trop lourd. On ne touche pas a la regle partagee, qui sert
+   toujours a /archive et au thème light-site. */
+.mobile-nav-trigger--light {
+  border-color: rgb(16 16 16 / 15%);
+  background-color: #ffffff;
+  color: #101010;
+}
+
+.mobile-nav-trigger--light .mobile-nav-trigger__mark {
+  background-color: #101010;
   color: #ffffff;
 }
 
@@ -629,6 +936,178 @@ html.light-site .social-mark--whatsapp { color: #101010 !important; }
   animation: marquee 25s linear infinite;
 }
 
+/* Nuages du hero : la piste contient deux copies de l'image cote a cote, donc
+   un deplacement de -50% ramene exactement la seconde copie a la place de la
+   premiere -> boucle sans saut. Meme principe que .animate-marquee ci-dessus. */
+@keyframes cloud-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+.animate-cloud-drift {
+  animation: cloud-drift 90s linear infinite;
+  will-change: transform;
+}
+
+/* Les images de nuages sont des rectangles : sans fondu, leurs bords haut et
+   bas tracent deux lignes nettes en travers du hero. On les estompe avec un
+   masque vertical. */
+.cloud-band {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.85) 22%,
+    rgba(0, 0, 0, 0.85) 72%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.85) 22%,
+    rgba(0, 0, 0, 0.85) 72%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cloud-drift {
+    animation: none;
+  }
+}
+
+/* Grain global : un seul calque fixe au viewport, donc une seule couche de
+   bruit pour tout le site plutot qu'une par section. `fixed` le laisse
+   immobile au defilement, ce qui evite de faire glisser la texture sur le
+   contenu. z-index eleve mais pointer-events: none : il passe par-dessus tout
+   sans jamais intercepter un clic. */
+.site-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='2.4' intercept='-0.55'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-grain {
+    opacity: 0.08;
+  }
+}
+
+/* Effet EAU sur la modale projet : une nappe lumineuse qui derive lentement
+   sur toute la surface du panneau, en remplacement du grain. C'est un calque
+   unique en pointer-events: none -- il n'intercepte aucun clic et ne touche
+   pas au contenu, il ne fait que passer dessus.
+
+   Deux degres radiaux de tailles differentes, animes a des vitesses qui ne
+   sont pas multiples l'une de l'autre : leur croisement ne se repete jamais
+   a l'identique, donc l'oeil n'y lit pas de boucle. */
+@keyframes modal-water-a {
+  0%   { transform: translate3d(-8%, -6%, 0) scale(1.15); }
+  50%  { transform: translate3d(7%, 5%, 0) scale(1.3); }
+  100% { transform: translate3d(-8%, -6%, 0) scale(1.15); }
+}
+
+@keyframes modal-water-b {
+  0%   { transform: translate3d(6%, 8%, 0) scale(1.25); }
+  50%  { transform: translate3d(-7%, -6%, 0) scale(1.1); }
+  100% { transform: translate3d(6%, 8%, 0) scale(1.25); }
+}
+
+.modal-water {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.modal-water::before,
+.modal-water::after {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  will-change: transform;
+}
+
+.modal-water::before {
+  background: radial-gradient(
+    42% 38% at 30% 32%,
+    rgba(255, 255, 255, 0.055) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  animation: modal-water-a 19s ease-in-out infinite;
+}
+
+.modal-water::after {
+  background: radial-gradient(
+    38% 44% at 68% 64%,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  animation: modal-water-b 27s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-water::before,
+  .modal-water::after {
+    animation: none;
+  }
+}
+
+/* Revelation des sections de texte (ClientsSection, LegacySection).
+   En CSS pur via animation-timeline: view() -- pas de ScrollTrigger ici : la
+   page defile dans le conteneur de Locomotive, et un declencheur mal accroche
+   laissait le texte a opacite 0, donc invisible. Le repli @supports garantit
+   que le texte reste VISIBLE sur les navigateurs sans cette API. */
+@keyframes section-reveal {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes section-reveal-left {
+  from { opacity: 0; transform: translateX(-36px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes section-reveal-right {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@supports (animation-timeline: view()) {
+  .reveal-up,
+  .reveal-left,
+  .reveal-right {
+    animation-timeline: view();
+    animation-range: entry 8% cover 34%;
+    animation-fill-mode: both;
+    animation-duration: 1ms; /* pilotee par le defilement, pas par le temps */
+  }
+
+  .reveal-up { animation-name: section-reveal; }
+  .reveal-left { animation-name: section-reveal-left; }
+  .reveal-right { animation-name: section-reveal-right; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up,
+  .reveal-left,
+  .reveal-right {
+    animation: none;
+  }
+}
+
+/* Modale projet ouverte : le grain est un calque fixe en z-index 9999, donc
+   il passait AUSSI par-dessus le panneau. On l'eteint pendant l'ouverture --
+   la planche se lit alors sur un noir franc. Le drapeau est celui que la
+   modale pose deja sur <html>. */
+html[data-ribbon-frozen="1"] .site-grain {
+  opacity: 0;
+}
+
 .card-transition {
   transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.8s cubic-bezier(0.76, 0, 0.24, 1);
 }
@@ -650,59 +1129,561 @@ html.light-site .social-mark--whatsapp { color: #101010 !important; }
   opacity: 0 !important;
 }
 
+/* --- Ecran de chargement -----------------------------------------------
+   Structure reprise du site de reference : les visuels sont superposes dans
+   une meme case et apparaissent en cascade, le titre est decoupe lettre par
+   lettre derriere des masques, le compteur monte en pixels reels, et les deux
+   volets se referment par clip-path. */
 .site-loader {
+  contain: layout paint;
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: grid;
-  place-items: center;
   overflow: hidden;
+  color: #f1efed;
+}
+
+.site-loader__panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
   background: #101010;
-  color: #c9c5ba;
-  font-family: "Courier New", monospace;
-  font-size: clamp(0.75rem, 1.15vw, 1.25rem);
-  text-transform: uppercase;
-  animation: site-loader-exit 2.8s ease-in-out forwards;
+  z-index: 3;
 }
 
-.site-loader__marker {
-  display: block;
-  flex: none;
-  width: 0.62em;
-  height: 0.62em;
-  background: #d9d6cc;
-  animation: site-loader-marker 0.8s steps(1, end) infinite;
+.site-loader__panel--top {
+  top: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.site-loader__label {
+.site-loader__panel--bottom {
+  bottom: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.site-loader__images {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
   display: flex;
   align-items: center;
-  gap: 0.55em;
+  justify-content: center;
 }
 
-@keyframes site-loader-marker {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0.25; }
+/* La case qui recoit la pile d'images. */
+.site-loader__img {
+  width: 50%;
+  aspect-ratio: 3 / 2;
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
 
-@keyframes site-loader-exit {
-  0%, 84% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
+.site-loader__images-inner {
+  will-change: transform;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
 
-@keyframes expert-card-enter {
-  from { opacity: 0; transform: translate3d(18px, -24px, 0) scale(0.96); }
-  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+/* Toutes les images occupent la meme place : la derniere arrivee couvre la
+   precedente, d'ou l'effet de pile qui se construit. */
+.site-loader__image {
+  will-change: transform;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.25rem;
 }
 
-@keyframes expert-card-exit {
-  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
-  100% { opacity: 0; transform: translate3d(-135%, 12%, 0) rotate(-18deg); }
+.site-loader__heading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
 }
 
-.expert-card-enter { animation: expert-card-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.expert-card-exit { animation: expert-card-exit 460ms cubic-bezier(0.55, 0, 1, 0.45) both; }
+.site-loader__heading h2 {
+  display: flex;
+  font-family: "anton", sans-serif;
+  font-size: clamp(2.5rem, 9vw, 9rem);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.loader-char-mask {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.loader-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.site-loader__counter {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  height: 5rem;
+  clip-path: polygon(0 0, 100% 0, 100% 5rem, 0 5rem);
+}
+
+.loader-digit {
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  height: 5rem;
+  font-family: "anton", sans-serif;
+  font-size: 5rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.loader-num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  height: 5rem;
+}
+
+@media (min-width: 768px) {
+  .site-loader__img { width: 25%; }
+
+  .site-loader__counter {
+    right: 2.5rem;
+    height: 7.5rem;
+    clip-path: polygon(0 0, 100% 0, 100% 7.5rem, 0 7.5rem);
+  }
+
+  .loader-digit { height: 7.5rem; font-size: 7.5rem; }
+  .loader-num { height: 7.5rem; }
+}
+
+/* --- CLIENTS section (AboutPage) --------------------------------------- */
+/* `body *` impose circular-web en !important : sans cette exception, le script
+   du titre et du monogramme retomberait en circular-web. */
+body .clients-script,
+body .clients-script * {
+  font-family: "alex-brush", cursive !important;
+}
+
+body .legacy-display,
+body .legacy-display * {
+  font-family: "anton", sans-serif !important;
+}
+
+body .legacy-serif,
+body .legacy-serif * {
+  font-family: "playfair-italic", Georgia, serif !important;
+}
+
+/* Les moulins de la section UI/UX tournent en continu. */
+@keyframes wind-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wind-spin {
+  animation: wind-spin 9s linear infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .site-loader__marker { animation: none; }
+  .wind-spin { animation: none; }
+}
+
+/* Le mot de fond de la section projets s'etale d'un bord a l'autre :
+   text-justify inter-character + un ::after vide pour justifier la
+   derniere (et unique) ligne. */
+.works-float {
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+.works-float::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+}
+
+/* Titre de projet : la premiere lettre bascule en script, le reste garde le
+   display condense. `body *` impose circular-web en !important, d'ou les
+   selecteurs dedies ici aussi. */
+body .work-title {
+  font-family: "anton", sans-serif !important;
+}
+
+body .work-title::first-letter {
+  font-family: "alex-brush", cursive !important;
+  padding-right: 4%;
+}
+
+/* --- Barre mobile a couleur adaptative ---------------------------------
+   Meme principe que la reference : pas de fond, pas de bordure, et
+   mix-blend-mode difference. La barre s'inverse donc toute seule selon la
+   section qui passe dessous (blanche sur fond sombre, sombre sur fond clair)
+   sans aucun JS de detection. */
+.mobile-adaptive-nav {
+  background-color: transparent;
+  border: 0;
+  color: #ffffff;
+  mix-blend-mode: difference;
+}
+
+/* Sur le hero uniquement : blanc franc. "difference" inverse la barre sur les
+   zones claires de l'image (les nuages) et le nom vire au sombre. Passe le
+   hero, l'adaptation reprend normalement. */
+.mobile-adaptive-nav.is-over-hero {
+  mix-blend-mode: normal;
+  color: #ffffff;
+}
+
+
+.mobile-adaptive-nav a,
+.mobile-adaptive-nav p,
+.mobile-adaptive-nav button {
+  color: inherit;
+}
+
+
+/* --- Nav desktop a couleur adaptative ----------------------------------
+   Meme principe que la barre mobile : mix-blend-mode difference sur le
+   conteneur, texte blanc. La nav s'inverse donc selon la section qui defile
+   dessous. Cette regle vient APRES les blocs qui forcaient le blanc en
+   !important plus haut, sinon le fond reste opaque. */
+/* Le blend doit vivre sur le conteneur fixed : c'est lui qui cree le contexte
+   d'empilement. Pose sur le <nav> enfant, il ne voyait que ce contexte et
+   n'inversait donc rien. */
+.desktop-nav-shell {
+  background-color: transparent !important;
+}
+
+/* Le blend n'est actif que sur les sections claires (classe posee par le JS
+   de NavBar) : ailleurs la nav doit rester franchement blanche. */
+.desktop-nav-shell.nav-blend {
+  mix-blend-mode: difference;
+}
+
+.hero-desktop-nav,
+.secondary-desktop-nav,
+html.light-site .hero-desktop-nav,
+html.light-site .secondary-desktop-nav,
+html.light-site .floating-nav .hero-desktop-nav {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* En mode difference, tout le contenu herite du blanc : les exceptions qui
+   repassaient certains elements en #101010 casseraient l'inversion. */
+.hero-desktop-nav :is(a, button, span, div, p),
+.secondary-desktop-nav :is(a, button, span, div, p),
+html.light-site .hero-desktop-nav :is(a, button, span, div, p),
+html.light-site .secondary-desktop-nav :is(a, button, span, div, p) {
+  color: #ffffff !important;
+}
+
+/* --- Liste de projets (volet au survol) --------------------------------
+   Chaque ligne est une fenetre de 80px sur un wrapper de 240px contenant
+   trois bandes. Au repos on voit la bande 3 (nom, fond clair) ; au survol le
+   wrapper descend pour amener la bande 2 (description, fond inverse). */
+.projects-list__row {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.projects-list__wrapper {
+  transition: transform 0.55s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.projects-list__row:hover .projects-list__wrapper,
+.projects-list__row:focus-visible .projects-list__wrapper {
+  transform: translateY(-80px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projects-list__wrapper { transition: none; }
+}
+
+/* L'apercu n'apparait que sur la ligne survolee, et deborde par-dessus les
+   lignes voisines. Le survol est ecoute sur l'item (pas sur le bouton, qui a
+   overflow:hidden et couperait l'image). */
+.projects-list__item:hover .projects-list__preview {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.projects-list__item:hover {
+  z-index: 60;
+}
+
+/* Vibe-check bascule entre fond sombre et fond clair : en mode clair le
+   header blanc devient illisible, on le repasse donc en sombre. */
+.vibe-header--light .theme-site-header,
+.vibe-header--light .theme-site-header :is(a, button, span, div) {
+  color: #101010 !important;
+}
+
+.vibe-header--light .theme-site-header {
+  border-color: rgb(16 16 16 / 15%) !important;
+}
+
+/* --- Page contact ------------------------------------------------------
+   Le grain vient du calque global .site-grain, pose au niveau de App.
+   Structure reprise de la reference : page plein ecran sans scroll, une carte
+   centrale encadree d'un contour epais, posee sur une grille 3 colonnes. */
+/* La page defile desormais (la carte occupe un ecran, le Footer vient
+   dessous) : une hauteur fixe ici rognerait le Footer. */
+.contact-page {
+  min-height: 100svh;
+}
+
+/* Dimensions exactes de la reference : 33rem x 18.1rem. */
+.contact-card {
+  width: 33rem;
+  max-width: 100%;
+  height: 18.1rem;
+  padding: 0.8rem 1rem;
+}
+
+/* Le cadre est un SVG en surimpression : ses ombres internes debordent du
+   trace, d'ou l'inset negatif. overlay comme sur la reference. */
+.contact-card__frame {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  color: #d3d0c5;
+}
+
+.contact-card__inner {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .contact-card {
+    width: 100%;
+    height: auto;
+    min-height: 16rem;
+    padding: 2rem 1.25rem;
+  }
+}
+
+
+/* Soulignement qui se deploie depuis la gauche au survol. */
+.contact-link {
+  position: relative;
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+
+.contact-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.contact-link:hover::after,
+.contact-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* --- Bloc newsletter + adresse (page contact) --------------------------
+   Valeurs reprises telles quelles de la reference : carte en colonne avec
+   titre en haut et formulaire en bas, champ sans fond avec un simple filet
+   sous le texte, et une fleche de 0.375rem en guise de bouton. */
+/* Les deux moities du cadre central : newsletter a gauche, signature et
+   adresse a droite — comme la reference (news-letter-card + card-svg_w). */
+.news-letter-card {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 50%;
+  height: 100%;
+  padding: 2.5rem;
+  background-color: rgb(211 208 197 / 8%);
+}
+
+/* Le monogramme s'aligne en haut sur le titre Newsletter (meme padding que
+   .news-letter-card), l'adresse reste calee en bas. */
+.card-svg_w {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+  padding: 2.5rem 1.25rem 1.75rem;
+}
+
+.card-signature {
+  display: block;
+  font-size: 5.5rem;
+  line-height: 0.75;
+  color: #e4739b;
+}
+
+@media (max-width: 767px) {
+  .contact-card__inner {
+    flex-direction: column;
+  }
+
+  .news-letter-card,
+  .card-svg_w {
+    width: 100%;
+    height: auto;
+  }
+
+  .news-letter-card {
+    padding: 1.5rem;
+  }
+}
+
+.news-letter-card__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.news-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  height: 1.5rem;
+  margin-top: 2rem;
+}
+
+.field-form {
+  width: 100%;
+  height: 100%;
+  padding: 0 0 0.5rem;
+  border: 0 solid currentColor;
+  border-bottom-width: 0.05rem;
+  border-radius: 0;
+  background-color: transparent;
+  color: inherit;
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.field-form::placeholder {
+  color: inherit;
+  opacity: 0.55;
+}
+
+.field-form:focus {
+  outline: none;
+}
+
+/* Le bouton reel est transparent et couvre la fleche, qui sert de repere. */
+.fake-submit_w {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-top: 1px;
+  margin-left: 0.75rem;
+}
+
+.submit-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.arrow-submit-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  width: 0.375rem;
+  height: 0.375rem;
+  transition: transform 0.3s ease;
+}
+
+.fake-submit_w:hover .arrow-submit-form {
+  transform: translate(2px, -2px);
+}
+
+/* Adresse : petites capitales tres espacees, centrees. */
+.card-address {
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Le reticule traverse les cartes 3D et casse la profondeur : la vue spirale
+   le masque via cette classe posee sur <body>. */
+body.hide-site-cursor .site-cursor { display: none; }
+
+/* Galerie horizontale des projets : on garde le defilement, pas la barre. */
+.projects-grid__rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+.projects-grid__rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Croix de fermeture a couleur adaptative ---------------------------
+   Le cercle ne change pas : il garde son fond translucide, sa bordure et son
+   flou. Seule la CROIX s'adapte, par mix-blend-mode difference -- blanche sur
+   un fond sombre, noire sur un fond clair, sans aucun JS de detection, comme
+   la nav.
+
+   Le detail qui compte : backdrop-filter cree un contexte d'empilement. Porte
+   par le bouton, il enfermait le blend de la croix, qui ne se composait plus
+   qu'avec le disque et restait donc blanche meme sur les captures claires.
+   Le flou vit donc sur le disque (couche a part) et la croix, posee
+   au-dessus, se compose avec le contenu qui defile derriere le bouton. */
+.modal-close__disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid #494949;
+  background-color: rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(10px);
+}
+
+
+.modal-close__x {
+  position: relative;
+  mix-blend-mode: difference;
+  color: #ffffff;
 }

@@ -26,3 +26,7 @@ dist-ssr
 # Claude Code local config
 .claude/
 .vercel
+
+# Scripts de capture Playwright a la racine : outils de debug local
+# (captures, mesures de rendu), pas du code du site.
+/*.mjs

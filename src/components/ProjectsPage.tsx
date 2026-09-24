@@ -1,45 +1,74 @@
 import { useState } from "react";
-import Features from "./Features";
-import type { ProjectFilter } from "./Features";
-import NavBar from "./NavBar";
+import ProjectsList from "./ProjectsList";
+import ProjectsGrid from "./ProjectsGrid";
 import { SmoothScrollProvider } from "../context/ScrollProviderContext";
-import Footer from "./Footer";
-import { LocalizedText } from "./LanguageToggle";
 import DesktopSiteHeader from "./DesktopSiteHeader";
 import MobileSiteMenu from "./MobileSiteMenu";
 
-const ProjectsIntro = ({ activeFilter, onFilterChange }: { activeFilter: ProjectFilter; onFilterChange: (filter: ProjectFilter) => void }) => (
-  <section className="theme-surface border-b border-white/15 bg-black px-5 pb-14 pt-10 font-mono text-white md:px-8 md:pb-20 md:pt-16">
-    <div className="flex items-start justify-between">
-      <h1 className="font-sans text-[22vw] font-medium uppercase leading-[0.78] tracking-[-0.09em] md:text-[13vw]">
-        S/Work<sup className="ml-3 align-top font-mono text-[4vw] tracking-normal md:text-[2.5vw]">[14]</sup>
-      </h1>
-      <span className="mt-5 size-3 bg-[#fb6f92] md:mr-[14%] md:mt-8 md:size-4" aria-hidden="true" />
-    </div>
-    <div className="mt-14 flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] uppercase md:mt-20 md:text-xl">
-      <span className="opacity-60">&gt;&nbsp; <LocalizedText fr="Filtrer par" en="Filter by" /></span>
-      <button type="button" onClick={() => onFilterChange("all")} className={activeFilter === "all" ? "underline underline-offset-4" : ""}><LocalizedText fr="Tout [14]" en="All [14]" /></button>
-      <span>,</span><button type="button" onClick={() => onFilterChange("brand")} className={activeFilter === "brand" ? "underline underline-offset-4" : ""}>Brand Design</button>
-      <span>,</span><button type="button" onClick={() => onFilterChange("uiux")} className={activeFilter === "uiux" ? "underline underline-offset-4" : ""}>UI/UX</button>
-      <span>,</span><button type="button" onClick={() => onFilterChange("website")} className={activeFilter === "website" ? "underline underline-offset-4" : ""}><LocalizedText fr="Site Web" en="Website" /></button>
-    </div>
-  </section>
+type View = "grid" | "list";
+
+// Bascule grille / liste, centree en haut.
+const ViewToggle = ({ view, onChange }: { view: View; onChange: (v: View) => void }) => (
+  <div className="flex items-center justify-center gap-3 font-mono text-[12px] lowercase md:text-[13px]">
+    <button
+      type="button"
+      onClick={() => onChange("grid")}
+      className={`transition-opacity duration-300 ${view === "grid" ? "text-white" : "text-white/40 hover:text-white/70"}`}
+    >
+      grid
+    </button>
+    <span className="text-white/40" aria-hidden="true">&bull;</span>
+    <button
+      type="button"
+      onClick={() => onChange("list")}
+      className={`transition-opacity duration-300 ${view === "list" ? "text-white" : "text-white/40 hover:text-white/70"}`}
+    >
+      list
+    </button>
+  </div>
 );
 
 const ProjectsPage = () => {
-  const [activeFilter, setActiveFilter] = useState<ProjectFilter>("all");
+  const [view, setView] = useState<View>("grid");
+
+  // En vue ruban la page ne defile pas : <main> est fixed inset-0, la molette
+  // alimente le scroll virtuel horizontal. La vue liste garde le scroll
+  // vertical habituel, donc Locomotive n'est monte que pour elle.
+  if (view === "grid") {
+    return (
+      <main className="theme-surface fixed inset-0 overflow-hidden bg-black">
+        {/* L'en-tete et la bascule flottent au-dessus du ruban : le <main> est
+            en fixed sans padding, donc le gouttiere horizontale que l'en-tete
+            attendait de la page est portee ici. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-5 md:px-8">
+          <div className="pointer-events-auto">
+            <MobileSiteMenu />
+            <DesktopSiteHeader active="projects" />
+            <div className="pt-4">
+              <ViewToggle view={view} onChange={setView} />
+            </div>
+          </div>
+        </div>
+        <ProjectsGrid />
+      </main>
+    );
+  }
+
   return (
-  <SmoothScrollProvider>
-    <main className="theme-surface main-container min-h-screen overflow-hidden bg-black px-5 md:px-8">
-      <MobileSiteMenu />
-      <DesktopSiteHeader active="projects" />
-      <div className="-mx-5 md:-mx-8">
-      <ProjectsIntro activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-      <Features showAllSiteProjects activeFilter={activeFilter} />
-      <Footer />
-      </div>
-    </main>
-  </SmoothScrollProvider>
+    <SmoothScrollProvider>
+      <main className="theme-surface main-container min-h-screen overflow-hidden bg-black px-5 md:px-8">
+        <MobileSiteMenu />
+        <DesktopSiteHeader active="projects" />
+        <div className="-mx-5 md:-mx-8">
+          {/* Le meme pt-4 que la vue grille : la bascule ne doit pas se
+              deplacer quand on passe d'une vue a l'autre. */}
+          <div className="pt-4">
+            <ViewToggle view={view} onChange={setView} />
+          </div>
+          <ProjectsList />
+        </div>
+      </main>
+    </SmoothScrollProvider>
   );
 };
 

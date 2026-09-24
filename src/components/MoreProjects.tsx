@@ -9,14 +9,11 @@ const projects = [
   { name: "Secure Tutor", expertise: "Goodies & Brand Design", team: "Emmanuela", year: "2026", href: "/secure-tutor", image: "/REVOLU/big secure.webp" },
   { name: "Gummy", expertise: "Brand Design", team: "Emmanuela", year: "2026", href: "/gummy", image: "/REVOLU/big gummy.webp" },
   { name: "Vennis Tenis Club", expertise: "Brand Design", team: "Emmanuela", year: "2026", href: "/vennis", image: "/optimized/vennis-card.webp" },
-  { name: "Rhode", expertise: "Direction artistique & digital", team: "Emmanuela", year: "2025", href: "/rhode", image: "/site%20/rhode.webp" },
   { name: "MEB", expertise: "Site Web", team: "Emmanuela", year: "2026", href: "https://meb-beta.vercel.app", image: "/site%20/meb1.svg" },
-  { name: "Full Bridge", expertise: "Site Web", team: "Emmanuela", year: "2026", href: "https://fullbridgedigital.com", image: "/site%20/full.webp" },
-  { name: "Secure Tutor App", expertise: "UI/UX", team: "Emmanuela", year: "2026", href: "/secure-tutor-app", image: "/REVOLU/big secure.webp" },
   { name: "ZEM", expertise: "Site Web", team: "Emmanuela", year: "2026", href: "https://zem2-0.vercel.app", image: "/site%20/Zem2.0.webp" },
   { name: "Tekbot", expertise: "UI/UX", team: "Emmanuela", year: "2025", href: "/tekbot", image: "/site%20/logo.webp" },
   { name: "Dogs", expertise: "Brand Design", team: "Emmanuela", year: "2026", href: "/dogs", image: "/optimized/dogs-card.webp" },
-  { name: "ArbitraChain", expertise: "UI/UX", team: "Emmanuela", year: "2025", href: "/arbitrachain", image: "/ArbitraChain/image_1.webp" },
+  { name: "ArbitraChain", expertise: "UI/UX", team: "Emmanuela", year: "2025", href: "/arbitrachain", image: "/thumbs/arbitrachain.webp" },
 ];
 
 const MoreProjects = ({ current }: { current: string }) => {
@@ -24,7 +21,7 @@ const MoreProjects = ({ current }: { current: string }) => {
   const [active, setActive] = useState(0);
   const preview = available[active] || available[0];
   const previewProgress = available.length > 1 ? (active / (available.length - 1)) * 100 : 0;
-  const mobilePreview = preview && ({ "Full Bridge": "/site%20/tfull.webp", Score: "/site%20/tscore.webp", MEB: "/site%20/tmeb.webp" } as Record<string, string>)[preview.name];
+  const mobilePreview = preview && ({ Score: "/site%20/tscore.webp", MEB: "/site%20/tmeb.webp" } as Record<string, string>)[preview.name];
 
   return (
     <footer className="bg-[#101010] px-5 py-14 font-mono text-[#d9d6cc] md:px-8 md:py-20">

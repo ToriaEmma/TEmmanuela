@@ -1,14 +1,13 @@
-import ColorThemeToggle from "./ColorThemeToggle";
 import LanguageToggle, { LocalizedText } from "./LanguageToggle";
 import MobileProjectHeader from "./MobileProjectHeader";
 import MoreProjects from "./MoreProjects";
 import DesktopSiteHeader from "./DesktopSiteHeader";
 
 const catsLogos = Array.from({ length: 4 }, (_, index) => `/REVOLU/CATS/${index + 1}.webp`);
-const catsApplications = Array.from(
-  { length: 6 },
-  (_, index) => `/REVOLU/Totaly/${index + 7}.webp`,
-);
+const catsApplications = [
+  "/REVOLU/CATS/5.webp",
+  ...Array.from({ length: 4 }, (_, index) => `/REVOLU/Totaly/${index + 9}.webp`),
+];
 
 const CatsProject = () => {
   return (
@@ -73,6 +72,7 @@ const CatsProject = () => {
                     alt={`Application Cats ${index + 1}`}
                     className="block h-auto w-full"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}

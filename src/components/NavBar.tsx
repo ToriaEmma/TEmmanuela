@@ -6,6 +6,7 @@ import gsap from "gsap";
 import LanguageToggle, { LocalizedText } from "./LanguageToggle";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { navigateTo } from "../utils/navigation";
+import { PROJECT_COUNT } from "../data/projectCount";
 
 const NavBar = () => {
   const isHomePage = window.location.pathname === "/";
@@ -14,7 +15,6 @@ const NavBar = () => {
   const { locoScroll, progress } = useSmoothScroll();
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isNavVisible, setIsNavVisible] = useState(true);
-  const [isLightTheme, setIsLightTheme] = useState(() => localStorage.getItem("color-theme") === "light");
   const [mobileTime, setMobileTime] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -35,14 +35,45 @@ const NavBar = () => {
   useEffect(() => {
     gsap.to(navContainerRef.current, { y: isNavVisible ? 0 : -100, opacity: isNavVisible ? 1 : 0, duration: 0.2 });
   }, [isNavVisible]);
-  const toggleColorTheme = () => {
-    setIsLightTheme((current) => {
-      const next = !current;
-      document.documentElement.classList.toggle("light-site", next);
-      localStorage.setItem("color-theme", next ? "light" : "dark");
-      return next;
-    });
-  };
+
+  // Couleur adaptative : le mode "difference" inverse tout uniformement, ce
+  // qui rend la nav sombre au-dessus du hero et des cartes colorees. On ne
+  // l'active donc QUE sur les sections a fond clair ; partout ailleurs la nav
+  // reste blanche.
+  // Vrai tant que le hero couvre encore le haut de l'ecran : la barre y reste
+  // blanche (voir .is-over-hero), puis retrouve son adaptation de couleur.
+  const [overHero, setOverHero] = useState(true);
+  useEffect(() => {
+    const check = () => {
+      const hero = document.querySelector(".hero-display")?.closest("section, div");
+      if (!hero) return setOverHero(window.scrollY < window.innerHeight * 0.8);
+      setOverHero(hero.getBoundingClientRect().bottom > 74);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, []);
+
+  useEffect(() => {
+    const shell = navContainerRef.current;
+    if (!shell) return;
+
+    const update = () => {
+      const probeY = shell.getBoundingClientRect().bottom - 6;
+      const under = document.elementsFromPoint(window.innerWidth / 2, probeY);
+      const onLight = under.some(
+        (el) =>
+          el.classList?.contains("legacy-section") ||
+          el.classList?.contains("is-light-surface") ||
+          el.closest?.(".legacy-section, .is-light-surface") != null,
+      );
+      shell.classList.toggle("nav-blend", onLight);
+    };
+
+    update();
+    const id = window.setInterval(update, 150);
+    return () => window.clearInterval(id);
+  }, [progress]);
 
   const goToSection = (target: string) => {
     setIsMobileMenuOpen(false);
@@ -51,12 +82,9 @@ const NavBar = () => {
 
   const openArchive = () => {
     setIsMobileMenuOpen(false);
-    navigateTo("/archive");
+    navigateTo("/projects");
   };
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("light-site", isLightTheme);
-  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -76,7 +104,10 @@ const NavBar = () => {
   return (
     <>
       <div
-        className={`mobile-scroll-header fixed inset-x-0 top-0 z-[60] flex h-[74px] items-center justify-between border-b px-5 font-mono transition-transform duration-300 md:hidden ${progress > 0.1 ? "translate-y-0" : "-translate-y-full"}`}
+        /* Toujours en place : elle etait escamotee tant que le defilement
+           n'avait pas depasse 10%, donc le nom et l'heure restaient invisibles
+           sur tout le hero. */
+        className={`mobile-adaptive-nav fixed inset-x-0 top-0 z-[60] flex h-[74px] items-center justify-between px-5 font-mono transition-transform duration-300 md:hidden ${overHero ? "is-over-hero" : ""}`}
       >
         <div className="text-xs uppercase leading-relaxed">
           <a href="/" className="block font-bold">Emmanuela©</a>
@@ -84,7 +115,7 @@ const NavBar = () => {
         </div>
         <button
           type="button"
-          className="origin-center rotate-[-90deg] text-sm uppercase"
+          className="text-sm uppercase"
           onClick={() => setIsMobileMenuOpen(true)}
         >
           Menu
@@ -97,7 +128,7 @@ const NavBar = () => {
             <a href="/" className="block font-bold">Emmanuela©</a>
             <p>{mobileTime} GMT+1</p>
           </div>
-          <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="rotate-[-90deg] text-sm uppercase">
+          <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-sm uppercase">
             <LocalizedText fr="Sortir" en="Exit" />
           </button>
         </div>
@@ -105,7 +136,6 @@ const NavBar = () => {
         <nav className="absolute left-5 top-[41%] flex -translate-y-1/2 flex-col items-start gap-4 text-[18px] uppercase leading-none">
           <button type="button" onClick={() => navigateTo("/projects")} className="mobile-menu-link"><LocalizedText fr="PROJETS" en="PROJECTS" /></button>
           <button type="button" onClick={() => navigateTo("/about")} className="mobile-menu-link"><LocalizedText fr="À PROPOS" en="ABOUT" /></button>
-          <button type="button" onClick={() => navigateTo("/expertise")} className="mobile-menu-link"><LocalizedText fr="EXPERTISES" en="EXPERTISE" /></button>
           <button type="button" onClick={openArchive} className="mobile-menu-link">ARCHIVE</button>
           <button type="button" onClick={() => navigateTo("/vibe-check")} className="mobile-menu-link">VIBE-CHECK</button>
           <button type="button" onClick={() => navigateTo("/contact")} className="mobile-menu-link">CONTACT</button>
@@ -114,7 +144,6 @@ const NavBar = () => {
 
         <div className="absolute bottom-10 left-5 text-sm uppercase leading-relaxed">
           <button type="button" onClick={toggleAudio} className="block">▦ <LocalizedText fr={`Son [${isAudioPlaying ? "Actif" : "Coupé"}]`} en={`Sound [${isAudioPlaying ? "On" : "Off"}]`} /></button>
-          <button data-theme-sound type="button" onClick={toggleColorTheme} className="block">Color: {isLightTheme ? "#101010" : "#D3D0C5"}</button>
         </div>
 
         <div className="absolute bottom-10 right-11 flex items-end gap-2">
@@ -128,7 +157,7 @@ const NavBar = () => {
 
     <div
       ref={navContainerRef}
-      className="fixed inset-x-0 top-2 z-50 hidden h-11 border-none transition-all duration-700 sm:inset-x-6 sm:top-4 sm:h-16 md:block"
+      className="desktop-nav-shell fixed inset-x-0 top-2 z-50 hidden h-11 border-none transition-all duration-700 sm:inset-x-6 sm:top-4 sm:h-16 md:block"
     >
       <header className=" absolute top-1/2 w-full  -translate-y-1/2">
         <nav className={`${isHomePage ? "hero-desktop-nav" : "secondary-desktop-nav"} relative flex size-full items-center justify-between gap-5 px-3 py-2 font-mono text-white sm:p-4`}>
@@ -139,22 +168,16 @@ const NavBar = () => {
           </div>
           <div className="flex h-full items-center text-[10px] uppercase xl:text-xs">
               <div className={`hidden items-center md:flex ${isHomePage ? "absolute left-1/2 -translate-x-1/2" : ""}`}>
-              <a href="/projects" className="nav-hover-btn"><LocalizedText fr="Projets [14]" en="Projects [14]" /></a>
+              <a href="/projects" className="nav-hover-btn"><LocalizedText fr={`Projets [${PROJECT_COUNT}]`} en={`Projects [${PROJECT_COUNT}]`} /></a>
               <a href="/about" className="nav-hover-btn"><LocalizedText fr="À propos" en="About" /></a>
-              <a href="/expertise" className="nav-hover-btn"><LocalizedText fr="Expertises" en="Expertise" /></a>
-              <a href="/archive" className="nav-hover-btn">Archive</a>
+              
               <a href="/vibe-check" className="nav-hover-btn">Vibe-check</a>
-              <a href="/contact" className="nav-hover-btn hidden xl:block">Contact</a>
+              <a href="/contact" className="nav-hover-btn hidden items-center gap-1.5 xl:inline-flex">
+                Contact
+                <img src="/runner.gif" alt="" aria-hidden="true" className="h-4 w-4 object-contain [image-rendering:pixelated]" />
+              </a>
               <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" className="nav-hover-btn hidden 2xl:block">LinkedIn</a>
             </div>
-            <button
-              data-theme-sound
-              type="button"
-              onClick={toggleColorTheme}
-              className="ml-2 whitespace-nowrap font-mono text-[7px] uppercase text-blue-50 sm:ml-5 sm:text-[10px] md:ml-8 md:text-xs"
-            >
-              Color: {isLightTheme ? "#101010" : "#D3D0C5"}
-            </button>
             <div className="ml-2 scale-75 text-blue-50 sm:ml-4 sm:scale-100"><LanguageToggle /></div>
             <button onClick={toggleAudio} className="ml-3 flex items-center gap-1 p-1 xl:ml-6">
               <span className="hero-sound-label hidden text-black xl:inline"><LocalizedText fr={`Son [${isAudioPlaying ? "Actif" : "Coupé"}]`} en={`Sound [${isAudioPlaying ? "On" : "Off"}]`} /></span>

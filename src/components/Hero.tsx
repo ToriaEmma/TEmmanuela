@@ -1,43 +1,21 @@
 import gsap from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import Button from "./Button";
 import { TiLocation } from "react-icons/ti";
-import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
+// La fleur est purement decorative : trois-quarts du poids JS du site
+// (three + @react-three) partaient avec l'accueil pour elle. Chargee a la
+// demande, le hero s'affiche sans l'attendre et elle apparait ensuite.
+const Flower3D = lazy(() => import("./Flower3D"));
 import { LocalizedText } from "./LanguageToggle";
 gsap.registerPlugin(ScrollTrigger);
 const Hero = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [hasClicked, setHasClicked] = useState(false);
-  const totalVideos = 3;
-  const upcomingVideoIndex = (currentIndex + 1) % totalVideos;
   const [isLoading, setIsLoading] = useState(true);
-  const [isMouseMoving, setIsMouseMoving] = useState(false);
-  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const backgroundVideoRef = useRef(null);
-  const cursorRef = useRef(null);
   const heroRef = useRef<HTMLDivElement | null>(null);
 
-  function handleMiniVidoClick() {
-    setHasClicked(true);
-    setCurrentIndex(upcomingVideoIndex);
-    const animatedVideo = `#video-${upcomingVideoIndex}`;
-    const otherVideos = ["#video-0", "#video-1", "#video-2"].filter((video) => video !== animatedVideo);
-    gsap.set(animatedVideo, { zIndex: 30, width: "16rem", height: "16rem" });
-    gsap.set(otherVideos, {
-      zIndex: 20,
-    });
-    gsap.to(animatedVideo, {
-      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-      transformOrigin: "center center",
-      duration: 1,
-      width: "100%",
-      height: "100%",
-    });
-  }
-  
-  const heroImages = ["/optimized/hero-p4.webp", "/optimized/hero-3p.webp", "/REVOLU/2p.webp"];
-  const getVideoSrc = (index: number) => heroImages[index];
+  // Fond unique du hero : plus de rotation au clic, donc plus de cible cliquable
+  // ni d'etat d'index a suivre.
+  const heroImage = "/title3.png";
 
   useEffect(() => {
     // Never leave mobile visitors trapped behind the hero loader when an
@@ -45,77 +23,19 @@ const Hero = () => {
     const fallback = window.setTimeout(() => setIsLoading(false), 4500);
     return () => window.clearTimeout(fallback);
   }, []);
-  useGSAP(
-    () => {
-      if (hasClicked) gsap.from(backgroundVideoRef.current, { autoAlpha: 0, duration: 2 }).duration(2);
-    },
-    { dependencies: [currentIndex] },
-  );
   useEffect(() => {
-    if (window.matchMedia("(max-width: 767px)").matches) {
-      gsap.set("#video-frame", {
-        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-        borderRadius: 0,
-      });
-      return;
-    }
-    const ctx = gsap.context(() => {
-      gsap.set("#video-frame", { clipPath: "polygon(14% 0, 72% 0, 90% 97%, 0 96%)", borderRadius: "0 0 40% 10%" });
-      gsap.from("#video-frame", {
-        clipPath: "polygon(0% 0, 100% 0, 100% 100%, 0 100%)",
-        borderRadius: "0 0 0 0",
-        ease: "power1.inOut",
-        scrollTrigger: {
-          scroller: ".main-container",
-          trigger: "#video-frame",
-          start: "center 40%",
-          end: "bottom center",
-          scrub: true,
-        },
-      });
+    // Le hero reste un bloc rectangulaire net, identique sur mobile et desktop :
+    // plus de decoupe en polygone ni d'arrondi animes au scroll, pour qu'il soit
+    // directement colle a la section suivante en defilement simple.
+    gsap.set("#video-frame", {
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      borderRadius: 0,
     });
-    return () => ctx.revert();
-  }, []);
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!backgroundVideoRef.current) return;
-      if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
-      if (isMouseMoving) {
-        gsap.to(backgroundVideoRef.current, { autoAlpha: 1, duration: 0.2 });
-      }
-
-      // Set new inactivity timeout
-      inactivityTimeoutRef.current = setTimeout(() => {
-        setIsMouseMoving(false);
-        gsap.to(backgroundVideoRef.current, { autoAlpha: 0, duration: 0.5 });
-      }, 1000);
-      gsap.to(backgroundVideoRef.current, { autoAlpha: 1 });
-      const { clientX, clientY } = e;
-
-      const polygonClipPath = `polygon(
-        ${Math.max(clientX - 100, 0)}px ${Math.max(clientY - 100, 0)}px,
-        ${Math.min(clientX + 100, window.innerWidth)}px ${Math.max(clientY - 100, 0)}px,
-        ${Math.min(clientX + 100, window.innerWidth)}px ${Math.min(clientY + 100, window.innerHeight)}px,
-        ${Math.max(clientX - 100, 0)}px ${Math.min(clientY + 100, window.innerHeight)}px
-      )`;
-      gsap.to(backgroundVideoRef.current, {
-        polygonClipPath,
-        WebkitClipPath: polygonClipPath,
-        duration: 0.2,
-        ease: "power2.out",
-      });
-    };
-    if (!heroRef.current) return;
-    heroRef.current.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      heroRef.current?.removeEventListener("mousemove", handleMouseMove);
-    };
   }, []);
   return (
-    <div ref={heroRef} className="hero relative h-[82svh] w-screen overflow-x-hidden md:h-dvh">
+    <div ref={heroRef} className="hero relative h-[120svh] w-screen overflow-x-hidden md:h-[185dvh]">
       {isLoading && (
-        <div className="flex-center absolute z-[100] h-[82svh] w-screen overflow-hidden bg-violet-50 md:h-dvh">
+        <div className="flex-center absolute z-[100] h-[120svh] w-screen overflow-hidden bg-violet-50 md:h-[185dvh]">
           <div className="three-body">
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
@@ -123,66 +43,172 @@ const Hero = () => {
           </div>
         </div>
       )}
-      <div id="video-frame" className="relative z-10 h-[82svh] w-screen overflow-hidden rounded-lg bg-blue-75 md:h-dvh">
+      <div id="video-frame" className="relative z-10 h-[120svh] w-screen overflow-hidden bg-blue-75 md:h-[185dvh]">
         {" "}
         <div className=" video-container">
-          {[...Array(3)].map((_, index) => (
-            <img
-              key={index}
-              src={getVideoSrc(index)}
-              id={`video-${index}`}
-              alt=""
-              className={`absolute-center absolute h-full w-full object-cover object-center ${index === currentIndex ? "z-[30]" : "z-[20]"}`}
-              loading={index === 0 ? "eager" : "lazy"}
-              fetchPriority={index === 0 ? "high" : "auto"}
-              onLoad={() => index === 0 && setIsLoading(false)}
-              onError={() => index === 0 && setIsLoading(false)}
-            />
-          ))}
-
-          <div ref={cursorRef} className="absolute  z-50 h-32 w-32 overflow-hidden pointer-events-none" style={{ mixBlendMode: "normal" }} />
           <img
-            onClick={() => {
-              handleMiniVidoClick();
-            }}
-            ref={backgroundVideoRef}
-            src={getVideoSrc(upcomingVideoIndex)}
-            alt="Visuel suivant"
-            className="absolute invisible left-0 top-0 z-50 h-full w-full cursor-pointer rounded-2xl border-2 border-blue-200 object-cover"
+            src={heroImage}
+            id="video-0"
+            alt=""
+            className="absolute-center absolute z-[30] h-full w-full object-cover object-center"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            onLoad={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
           />
+
         </div>
+        {/* Nuages : deux bandes qui derivent de la droite vers la gauche, a des
+            vitesses differentes pour donner de la profondeur. Chaque piste fait
+            200% de large et contient l'image en double, ce qui permet a
+            l'animation de boucler sur -50% sans couture visible. */}
+        <div className="cloud-band pointer-events-none absolute inset-x-0 top-[24%] z-[32] h-[52%] overflow-hidden">
+          <div className="animate-cloud-drift flex h-full w-[200%]">
+            <img src="/clouds_2.webp" alt="" aria-hidden="true" className="h-full w-1/2 object-cover opacity-55" />
+            <img src="/clouds_2.webp" alt="" aria-hidden="true" className="h-full w-1/2 object-cover opacity-55" />
+          </div>
+        </div>
+
         <div className="pointer-events-none absolute inset-0 z-30 bg-black/10" />
-        <div className="pointer-events-none absolute inset-x-0 top-[35%] z-30 h-[8%] border-y border-white/10 bg-white/10 backdrop-blur-[1px]" />
-        <div className="pointer-events-none absolute inset-x-0 top-[51%] z-30 h-[6%] translate-x-8 border-y border-white/10 bg-black/10 backdrop-blur-[1px]" />
-        <div className="pointer-events-none absolute inset-x-0 top-[64%] z-30 h-[5%] -translate-x-10 border-y border-white/10 bg-white/10 backdrop-blur-[1px]" />
 
-        <div className="pointer-events-none absolute -left-7 bottom-[3%] z-40 grid grid-cols-5 gap-0 md:-left-3">
-          {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19].map((cell) => (
-            <span key={cell} className={`size-5 md:size-8 ${[0,5,6,10,11,12,16,17,18,19].includes(cell) ? "bg-[#D4FF36]" : "bg-transparent"}`} />
-          ))}
-        </div>
-        <div className="pointer-events-none absolute -right-4 top-0 z-40 grid grid-cols-5 gap-0">
-          {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19].map((cell) => (
-            <span key={cell} className={`size-5 md:size-8 ${[0,1,5,6,7,11,12,13,14,18,19].includes(cell) ? "bg-[#D4FF36]" : "bg-transparent"}`} />
-          ))}
+        {/* Fondu du FOND vers le noir : demarre a hauteur de CREATIVE et
+            s'assombrit jusqu'au bas du hero. Pose en z-[31] : au-dessus de
+            l'image de fond (z-30), mais sous les nuages, la fleur et les
+            titres. Trois paliers rapproches (25% / 60% / 85%) pour que la
+            progression reste douce sur toute la hauteur, sans palier visible. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[31] h-[92svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
+
+        {/* Les deux moities de l'ovale sont empilees separement pour que la
+            fleur passe ENTRE elles : le haut derriere (z-34), le bas devant
+            (z-40). Elles restent dans un conteneur commun de meme geometrie,
+            donc le raccord ne bouge pas. */}
+        <div className="pointer-events-none absolute inset-x-0 top-[27%] z-[34] mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+          <img
+            src="/oval_mobile_top.svg"
+            alt=""
+            aria-hidden="true"
+            className="block w-full select-none md:hidden"
+          />
+          <img
+            src="/oval_desktop_top.svg"
+            alt=""
+            aria-hidden="true"
+            className="hidden w-full select-none md:block"
+          />
+          <img
+            src="/oval_mobile_bot.svg"
+            alt=""
+            aria-hidden="true"
+            className="-mt-px block w-full select-none opacity-0 md:hidden"
+          />
+          <img
+            src="/oval_desktop_bot.svg"
+            alt=""
+            aria-hidden="true"
+            className="-mt-px hidden w-full select-none opacity-0 md:block"
+          />
+
+          {/* Encadre en haut a gauche du cadre, comme l'infobox de la
+              reference (.ban__oval__box : top 5%, left 2%). */}
+          <div className="absolute left-1/2 top-[4%] z-[8] w-[84%] -translate-x-1/2 border border-[#280822]/25 px-3 py-1.5 text-center md:left-[1%] md:w-auto md:max-w-[16%] md:translate-x-0 md:px-4 md:py-3 md:text-left">
+            <p className="whitespace-nowrap font-mono text-[8px] uppercase leading-[1.7] tracking-[0.08em] text-[#280822] md:whitespace-normal md:text-[9px]">
+              <LocalizedText
+                fr="Designer UI créative & visuelle"
+                en="Creative UI & Visual designer"
+              />
+            </p>
+          </div>
+
+          {/* Pendant du bloc de gauche, cale en haut a droite du cadre. */}
+          <img
+            src="/flag.svg"
+            alt=""
+            aria-hidden="true"
+            className="absolute right-[1%] top-[4%] z-[8] hidden w-[94px] select-none md:block"
+          />
+
         </div>
 
-        <div className={`pointer-events-none absolute inset-0 z-40 flex flex-col items-center justify-center px-5 text-center text-white transition-opacity duration-500 md:scale-[0.76] ${currentIndex === 1 ? "opacity-0" : "opacity-100"}`}>
-          <p className="font-mono text-[clamp(1.1rem,3.8vw,3.8rem)] uppercase leading-none tracking-[-0.06em] drop-shadow-lg">
-            <LocalizedText fr="Créer" en="Creating" />
-          </p>
-          <h1 className="my-1 bg-[#4d98f7] px-3 pb-2 font-sans text-[clamp(3.2rem,10vw,10rem)] font-light leading-[0.76] tracking-[-0.09em] md:px-6 md:pb-5">
-            <LocalizedText fr="n’est pas" en="isn’t just" />
-          </h1>
-          <p className="font-serif text-[clamp(2.5rem,7vw,7rem)] italic leading-[0.75] tracking-[-0.07em] drop-shadow-lg">
-            <LocalizedText fr="qu’un métier" en="a profession" />
-          </p>
+        <Suspense fallback={null}>
+          <Flower3D className="pointer-events-none absolute inset-0 z-[35]" />
+        </Suspense>
+
+        {/* Second calque du MEME fondu, pose PAR-DESSUS la fleur (z-[36] > 35).
+            Sans lui, la plante reste vert vif jusqu'en bas pendant que le fond
+            s'assombrit : elle se detache comme un decoupage colle. Avec lui,
+            elle s'eteint avec la scene. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[36] h-[92svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
+
+        <div className="pointer-events-none absolute inset-x-0 top-[27%] z-40 mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+          <img
+            src="/oval_mobile_top.svg"
+            alt=""
+            aria-hidden="true"
+            className="block w-full select-none opacity-0 md:hidden"
+          />
+          <img
+            src="/oval_desktop_top.svg"
+            alt=""
+            aria-hidden="true"
+            className="hidden w-full select-none opacity-0 md:block"
+          />
+          <img
+            src="/oval_mobile_bot.svg"
+            alt=""
+            aria-hidden="true"
+            className="-mt-px block w-full select-none md:hidden"
+          />
+          <img
+            src="/oval_desktop_bot.svg"
+            alt=""
+            aria-hidden="true"
+            className="-mt-px hidden w-full select-none md:block"
+          />
+          {/* Trait cale en bas a gauche du cadre de l'ovale, comme sur la
+              reference (.ban__oval:after). */}
+          <img
+            src="/line.svg"
+            alt=""
+            aria-hidden="true"
+            className="absolute bottom-[4%] left-0 z-[6] w-[70px] select-none md:left-[1%] md:w-[90px]"
+          />
+
         </div>
 
       </div>
-      <h1 className=" special-font hero-heading absolute bottom-5 right-5   text-black">
-        CREA<b>T</b>IVE
-      </h1>
+
+      {/* Bloc de titres monumental pose a cheval sur le bas du cadre : on n'en
+          voit que les premieres lignes tant que le hero est visible, le reste
+          se decouvre au scroll. z-[33] le place DERRIERE la fleur (z-35) et
+          l'ovale du bas (z-40), comme sur la reference ou la tige passe devant
+          les lettres.
+
+          Les six mots vivent dans un conteneur unique et s'empilent en flux
+          normal : chaque ligne herite de la meme police, taille et interligne,
+          donc l'empilement reste exact sans calcul de decalage par ligne. */}
+      <div
+        className="hero-display pointer-events-none absolute inset-x-0 top-[58svh] z-[33] select-none text-center text-[17vw] font-black uppercase leading-[0.9] tracking-[0.01em] md:top-[100dvh] md:-translate-y-[22%] md:text-[14vw]"
+        aria-hidden="true"
+      >
+        <h1 className="text-white/90">Creative</h1>
+        <p className="text-white/85">designing</p>
+        {/* Les quatre mots suivants n'existent qu'en mobile : sur desktop, le
+            titre se limite a CREATIVE / DESIGNING. */}
+        {["branding", "web design", "direction"].map((word) => (
+          <p key={word} className="text-white/85 md:hidden">
+            {word}
+          </p>
+        ))}
+        {/* "ui / ux" est encadre des deux motifs, comme la meme ligne en
+            desktop (voir App.tsx) : la version mobile les perdait, le bloc qui
+            les portait etant masque sous md. */}
+        <p className="flex items-center justify-center gap-[7vw] text-white/85 md:hidden">
+          <img src="/motif.gif" alt="" aria-hidden="true" className="h-[18px] w-auto" />
+          ui / ux
+          <img src="/motif.gif" alt="" aria-hidden="true" className="h-[18px] w-auto" />
+        </p>
+      </div>
     </div>
   );
 };
