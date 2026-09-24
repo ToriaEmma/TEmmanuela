@@ -188,7 +188,7 @@ const Hero = () => {
           normal : chaque ligne herite de la meme police, taille et interligne,
           donc l'empilement reste exact sans calcul de decalage par ligne. */}
       <div
-        className="hero-display pointer-events-none absolute inset-x-0 top-[53svh] z-[33] select-none text-center text-[15vw] font-black uppercase leading-[0.9] tracking-[0.01em] md:top-[100dvh] md:-translate-y-[22%] md:text-[14vw]"
+        className="hero-display pointer-events-none absolute inset-x-0 top-[60svh] z-[33] select-none text-center text-[13vw] font-black uppercase leading-[0.9] tracking-[0.01em] md:top-[100dvh] md:-translate-y-[22%] md:text-[14vw]"
         aria-hidden="true"
       >
         <h1 className="text-white/90">Creative</h1>
