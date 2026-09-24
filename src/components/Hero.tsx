@@ -83,7 +83,7 @@ const Hero = () => {
             fleur passe ENTRE elles : le haut derriere (z-34), le bas devant
             (z-40). Elles restent dans un conteneur commun de meme geometrie,
             donc le raccord ne bouge pas. */}
-        <div className="pointer-events-none absolute inset-x-0 top-[27%] z-[34] mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-[34] mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
           <img
             src="/oval_mobile_top.svg"
             alt=""
@@ -131,7 +131,7 @@ const Hero = () => {
         </div>
 
         <Suspense fallback={null}>
-          <Flower3D className="pointer-events-none absolute inset-0 z-[35]" />
+          <Flower3D className="pointer-events-none absolute inset-0 z-[35] translate-y-[3%] md:translate-y-0" />
         </Suspense>
 
         {/* Second calque du MEME fondu, pose PAR-DESSUS la fleur (z-[36] > 35).
@@ -140,7 +140,7 @@ const Hero = () => {
             elle s'eteint avec la scene. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[36] h-[92svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
 
-        <div className="pointer-events-none absolute inset-x-0 top-[27%] z-40 mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-40 mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
           <img
             src="/oval_mobile_top.svg"
             alt=""
