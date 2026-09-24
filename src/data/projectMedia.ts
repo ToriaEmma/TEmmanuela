@@ -16,6 +16,10 @@ export type ImageBlock = {
   /** Cerne les cadres du bloc d'un filet blanc, pour des captures dont le
    *  bord se confond avec le fond sombre du cadre. */
   outlined?: boolean;
+  /** Comme `outlined`, mais seulement a partir de cet index : un bloc peut
+   *  ainsi reunir des captures claires et sombres sans etre coupe en deux
+   *  (une coupure vaudrait space-y-20 entre elles au lieu du gap-3 habituel). */
+  outlinedFrom?: number;
   /** Intertitre optionnel, pose au-dessus du bloc. */
   title?: string;
   titleEn?: string;
@@ -136,13 +140,11 @@ export const projectMedia: Record<string, ProjectMedia> = {
     // doublon juste apres la description, ou la planche reprend deja.
     skipCover: true,
     blocks: [
-      // Les 14 ecrans, par rangees de trois. 2, 13 et 14 avaient disparu de la
-      // planche : ils y reviennent, a leur place dans la sequence.
-      { grid: 3, mobileGrid: 1, images: ["/shella/1.webp", "/shella/2.webp", "/shella/3.webp"] },
-      { grid: 3, mobileGrid: 1, images: ["/shella/4.webp", "/shella/5.webp", "/shella/6.webp"] },
-      { grid: 3, mobileGrid: 1, images: ["/shella/7.webp", "/shella/8.webp", "/shella/9.webp"] },
-      { grid: 3, mobileGrid: 1, images: ["/shella/10.webp", "/shella/11.webp", "/shella/12.webp"] },
-      { grid: 3, mobileGrid: 1, images: ["/shella/13.webp", "/shella/14.webp"] },
+      // Les 14 ecrans dans UN SEUL bloc : la grille les repartit d'elle-meme
+      // par rangees de trois. Les couper en cinq blocs inserait le
+      // space-y-20 des sections toutes les trois images -- un grand vide
+      // tous les trois ecrans en mobile, ou mobileGrid vaut 1.
+      { grid: 3, mobileGrid: 1, images: Array.from({ length: 14 }, (_, i) => `/shella/${i + 1}.webp`) },
     ],
   },
   "Secure Tutor App": {
@@ -176,8 +178,12 @@ export const projectMedia: Record<string, ProjectMedia> = {
       // La 4e capture passe en 3e : l'ordre du dossier n'est pas celui de
       // lecture du site. Les deux dernieres sont cernees d'un filet blanc --
       // leur bord sombre se perdrait sinon dans le fond du cadre.
-      { grid: 1, mobileGrid: 1, images: [2].map((i) => `/works-modal/score/${i}.webp`) },
-      { grid: 1, mobileGrid: 1, outlined: true, images: [4, 3].map((i) => `/works-modal/score/${i}.webp`) },
+      //
+      // UN SEUL bloc : en deux blocs, les captures etaient separees par le
+      // space-y-20 des sections au lieu du gap-3 des images, ce qui creusait
+      // un trou visible -- surtout en mobile. outlinedFrom laisse le filet
+      // aux deux dernieres sans couper la suite.
+      { grid: 1, mobileGrid: 1, outlinedFrom: 1, images: [2, 4, 3].map((i) => `/works-modal/score/${i}.webp`) },
     ],
   },
 
@@ -198,10 +204,11 @@ export const projectMedia: Record<string, ProjectMedia> = {
     // La couverture ouvrait la planche en doublon : on la laisse de cote.
     skipCover: true,
     blocks: [
-      // La planche longue d'abord, la capture aux nuages ensuite. Aucun
-      // intertitre : ce sont des vues du site, pas des declinaisons.
-      { grid: 1, mobileGrid: 1, images: ["/site%20/meb1.svg"] },
-      { grid: 1, mobileGrid: 1, images: [1].map((i) => `/works-modal/meb/${i}.webp`) },
+      // La planche longue puis la capture aux nuages, l'une SOUS l'autre
+      // dans un meme bloc : en deux blocs elles etaient separees par le
+      // space-y-20 des sections. Ici elles ne sont plus distantes que du
+      // gap-3 de la grille.
+      { grid: 1, mobileGrid: 1, images: ["/site%20/meb1.svg", "/works-modal/meb/1.webp"] },
     ],
   },
 

@@ -65,6 +65,23 @@ const ProjectModal = ({ project, onClose }: Props) => {
     );
     if (already) return declared;
 
+    // La couverture rejoint le PREMIER bloc au lieu d'en former un a part,
+    // quand celui-ci est deja sur une colonne (le cas des sites livres).
+    // En bloc separe, elle etait distante des captures suivantes du
+    // space-y-20 des sections -- un grand vide juste apres la premiere
+    // image, tres visible en mobile.
+    const [first, ...rest] = declared;
+    if (first && first.grid === 1 && first.mobileGrid === 1 && !first.title) {
+      // outlinedFrom suit le decalage : la couverture s'insere en tete, donc
+      // les index qu'il visait avancent tous d'un cran.
+      const merged = {
+        ...first,
+        images: [cover, ...first.images],
+        ...(first.outlinedFrom !== undefined ? { outlinedFrom: first.outlinedFrom + 1 } : {}),
+      };
+      return [merged, ...rest];
+    }
+
     return [{ grid: 1, mobileGrid: 1, images: [cover] }, ...declared];
   })();
 
@@ -388,7 +405,7 @@ const ProjectModal = ({ project, onClose }: Props) => {
                           <div
                             key={`${src}-${imageIndex}`}
                             className={`modal-image project-image-frame overflow-hidden rounded-lg bg-white ${block.logoVariants ? "project-logo-variant" : ""}`}
-                            style={{ ...(block.outlined ? { border: "1px solid white" } : {}), ...(block.logoVariants ? { backgroundColor: ["#f6f5f1", "#000", "#fff"][imageIndex], ...(imageIndex === 1 ? { border: "1px solid white" } : {}) } : {}) }}
+                            style={{ ...(block.outlined || (block.outlinedFrom !== undefined && imageIndex >= block.outlinedFrom) ? { border: "1px solid white" } : {}), ...(block.logoVariants ? { backgroundColor: ["#f6f5f1", "#000", "#fff"][imageIndex], ...(imageIndex === 1 ? { border: "1px solid white" } : {}) } : {}) }}
                           >
                             <img
                               src={src}
