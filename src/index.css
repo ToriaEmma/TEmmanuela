@@ -1681,3 +1681,23 @@ body.hide-site-cursor .site-cursor { display: none; }
     display: none;
   }
 }
+
+/* Vue ruban de la page projets : le geste tactile appartient au ruban, pas
+   au navigateur.
+
+   Sans touch-action, le glissement VERTICAL etait interprete comme un scroll
+   de page (ou un pull-to-refresh) et avale avant d'atteindre le ruban : on ne
+   pouvait donc pas remonter la bande au doigt. Les ecouteurs sont passifs et
+   ne peuvent pas l'empecher en JS, c'est au CSS de le dire.
+
+   overscroll-behavior coupe en plus le rebond de fin de page, qui faisait
+   sauter le cadre pendant le geste. */
+html:has(main.ribbon-stage),
+body:has(main.ribbon-stage) {
+  overscroll-behavior: none;
+}
+
+main.ribbon-stage {
+  touch-action: none;
+  overscroll-behavior: none;
+}

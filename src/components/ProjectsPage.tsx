@@ -36,7 +36,7 @@ const ProjectsPage = () => {
   // vertical habituel, donc Locomotive n'est monte que pour elle.
   if (view === "grid") {
     return (
-      <main className="theme-surface fixed inset-0 overflow-hidden bg-black">
+      <main className="theme-surface ribbon-stage fixed inset-0 overflow-hidden bg-black">
         {/* L'en-tete et la bascule flottent au-dessus du ruban : le <main> est
             en fixed sans padding, donc le gouttiere horizontale que l'en-tete
             attendait de la page est portee ici. */}
