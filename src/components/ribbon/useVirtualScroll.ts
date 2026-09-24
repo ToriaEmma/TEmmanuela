@@ -72,7 +72,14 @@ export const useVirtualScroll = ({ enabled = true, onTick }: Options = {}) => {
       if (frozen()) return;
       const y = e.touches[0].clientY;
       const x = e.touches[0].clientX;
-      const delta = (touchY - y + (touchX - x)) * TOUCH_MULT;
+      // Les deux axes etaient ADDITIONNES : un glissement vertical et un
+      // glissement horizontal se compensaient ou s'ajoutaient selon l'angle
+      // du doigt, si bien que le ruban partait dans le mauvais sens ou
+      // n'avancait pas. On ne garde que l'axe dominant du geste, et le
+      // defilement repond alors aussi bien vers le haut que vers le bas.
+      const dy = touchY - y;
+      const dx = touchX - x;
+      const delta = (Math.abs(dy) >= Math.abs(dx) ? dy : dx) * TOUCH_MULT;
       touchY = y;
       touchX = x;
       lastTouchDelta = delta;

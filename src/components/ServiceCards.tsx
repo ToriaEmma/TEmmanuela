@@ -139,7 +139,10 @@ const ServiceCards = () => {
         const number = card.querySelector(".service-card__number");
         const lines = card.querySelectorAll(".service-card__line");
         const rule = card.querySelector(".service-card__rule");
-        const image = card.querySelector(".service-card__image");
+        // En mobile le visuel est masque (hidden md:block) : inutile de lui
+        // poser un clipPath et un ScrollTrigger, c'est autant de travail en
+        // moins sur des appareils deja charges.
+        const image = isMobile ? null : card.querySelector(".service-card__image");
 
         // 2. Revelation du visuel par clip-path.
         if (image) {
@@ -279,7 +282,7 @@ const ServiceCards = () => {
                 aria-hidden="true"
                 loading="lazy"
                 decoding="async"
-                className="service-card__image aspect-[4/3] w-full object-cover md:aspect-[3/4]"
+                className="service-card__image hidden aspect-[4/3] w-full object-cover md:block md:aspect-[3/4]"
               />
             </div>
           </div>

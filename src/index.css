@@ -978,27 +978,6 @@ html.light-site .social-mark--whatsapp { color: #101010 !important; }
   }
 }
 
-/* Grain global : un seul calque fixe au viewport, donc une seule couche de
-   bruit pour tout le site plutot qu'une par section. `fixed` le laisse
-   immobile au defilement, ce qui evite de faire glisser la texture sur le
-   contenu. z-index eleve mais pointer-events: none : il passe par-dessus tout
-   sans jamais intercepter un clic. */
-.site-grain {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.14;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='2.4' intercept='-0.55'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-grain {
-    opacity: 0.08;
-  }
-}
-
 /* Effet EAU sur la modale projet : une nappe lumineuse qui derive lentement
    sur toute la surface du panneau, en remplacement du grain. C'est un calque
    unique en pointer-events: none -- il n'intercepte aucun clic et ne touche
@@ -1102,14 +1081,6 @@ html.light-site .social-mark--whatsapp { color: #101010 !important; }
   .reveal-right {
     animation: none;
   }
-}
-
-/* Modale projet ouverte : le grain est un calque fixe en z-index 9999, donc
-   il passait AUSSI par-dessus le panneau. On l'eteint pendant l'ouverture --
-   la planche se lit alors sur un noir franc. Le drapeau est celui que la
-   modale pose deja sur <html>. */
-html[data-ribbon-frozen="1"] .site-grain {
-  opacity: 0;
 }
 
 .card-transition {
@@ -1444,7 +1415,6 @@ html.light-site .secondary-desktop-nav :is(a, button, span, div, p) {
 }
 
 /* --- Page contact ------------------------------------------------------
-   Le grain vient du calque global .site-grain, pose au niveau de App.
    Structure reprise de la reference : page plein ecran sans scroll, une carte
    centrale encadree d'un contour epais, posee sur une grille 3 colonnes. */
 /* La page defile desormais (la carte occupe un ecran, le Footer vient
@@ -1690,4 +1660,24 @@ body.hide-site-cursor .site-cursor { display: none; }
   position: relative;
   mix-blend-mode: difference;
   color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------
+   Allegements mobiles.
+
+   Mesure sur un mobile simule (CPU x4, 390x844) : 5 images par seconde au
+   repos. Trois calques plein ecran travaillaient a chaque frame alors qu'ils
+   ne se voient presque pas sur un petit ecran.
+
+   La fleur 3D n'est PAS touchee : elle reste telle quelle.
+   --------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  /* La bande de nuages est retiree en mobile. Son degrade de masquage
+     laissait une zone trouble en travers du haut du hero -- lisible comme un
+     flou sale autour de l'ovale plutot que comme des nuages. Elle faisait en
+     plus deriver deux images de 184 Ko en boucle permanente, avec un calque
+     GPU reserve en continu par will-change. */
+  .cloud-band {
+    display: none;
+  }
 }

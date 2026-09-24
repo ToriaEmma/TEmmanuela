@@ -72,12 +72,17 @@ const Hero = () => {
 
         <div className="pointer-events-none absolute inset-0 z-30 bg-black/10" />
 
-        {/* Fondu du FOND vers le noir : demarre a hauteur de CREATIVE et
+        {/* h-[68svh] en mobile (95dvh en desktop) : a 92svh les deux fondus
+            commencaient a 236px alors que le cadre de l'ovale va de 143 a
+            305. Leur bord transparent grisait donc la moitie basse du cadre,
+            qu'on lisait comme un voile flou. Ils partent maintenant SOUS lui.
+
+            Fondu du FOND vers le noir : demarre a hauteur de CREATIVE et
             s'assombrit jusqu'au bas du hero. Pose en z-[31] : au-dessus de
             l'image de fond (z-30), mais sous les nuages, la fleur et les
             titres. Trois paliers rapproches (25% / 60% / 85%) pour que la
             progression reste douce sur toute la hauteur, sans palier visible. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[31] h-[92svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[31] h-[68svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
 
         {/* Les deux moities de l'ovale sont empilees separement pour que la
             fleur passe ENTRE elles : le haut derriere (z-34), le bas devant
@@ -138,7 +143,7 @@ const Hero = () => {
             Sans lui, la plante reste vert vif jusqu'en bas pendant que le fond
             s'assombrit : elle se detache comme un decoupage colle. Avec lui,
             elle s'eteint avec la scene. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[36] h-[92svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[36] h-[68svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
 
         <div className="pointer-events-none absolute inset-x-0 top-[30%] z-40 mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
           <img

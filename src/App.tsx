@@ -216,9 +216,6 @@ function App() {
       {/* Le site ne se monte qu'une fois le loader termine : sinon Three.js,
           Locomotive et toutes les images se chargent PENDANT l'animation et la
           font tomber a quelques images par seconde. */}
-      {/* Grain du site : un seul calque, fixe au viewport, pose par-dessus
-          toutes les pages (et non plus seulement la home). */}
-      {!isLoading && <div aria-hidden="true" className="site-grain" />}
       {/* Fallback noir plein ecran : les pages chargees a la demande arrivent
           en une fraction de seconde, on evite juste le flash blanc. */}
       {!isLoading && (

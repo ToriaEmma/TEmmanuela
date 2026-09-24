@@ -35,6 +35,29 @@ const WorksShowcase = () => {
       // Meme geste que la reference : chaque projet grandit en entrant dans
       // le viewport puis retrecit en sortant, colle au scroll (scrub).
       gsap.utils.toArray<HTMLElement>(".work-card").forEach((card) => {
+        // En mobile, une SEULE animation par carte au lieu de deux.
+        //
+        // Chaque carte portait un scrub a l'entree et un autre a la sortie,
+        // soit huit animations continues pour quatre cartes -- chacune
+        // recalculant scale et opacity a chaque frame, sur des images plein
+        // ecran. C'est ce qui rendait le defilement pateux sur telephone.
+        //
+        // Ici la carte entre en fondu et ne retrecit plus : l'opacite se
+        // compose sans reflow, la ou le scale force le navigateur a
+        // retravailler le rendu de l'image entiere.
+        if (isMobile) {
+          gsap.fromTo(
+            card,
+            { opacity: 0.5 },
+            {
+              opacity: 1,
+              ease: "none",
+              scrollTrigger: { trigger: card, scroller, start: "top bottom", end: "center 65%", scrub: true },
+            },
+          );
+          return;
+        }
+
         gsap.fromTo(
           card,
           { scale: 0.6, opacity: 0.4 },
