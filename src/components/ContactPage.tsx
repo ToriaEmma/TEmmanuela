@@ -17,9 +17,13 @@ const ContactPage = () => (
     <div className="relative flex min-h-svh flex-col justify-between overflow-hidden">
 
     {/* Bloc central : grille 3 colonnes, la carte encadree au milieu. */}
-    <section className="contact-stage relative z-10 grid flex-1 items-center gap-10 py-6 md:grid-cols-[1fr_auto_1fr]">
-      {/* Colonne gauche : coordonnees */}
-      <div className="hidden flex-col gap-2 text-[10px] font-semibold uppercase leading-[1.3] tracking-[0.1em] opacity-70 md:flex">
+    <section className="contact-stage relative z-10 grid flex-1 content-center items-center gap-5 py-6 md:gap-10 md:grid-cols-[1fr_auto_1fr]">
+      {/* Colonne gauche : coordonnees. En mobile elles etaient masquees
+          (hidden md:flex) et la page n'affichait donc aucun moyen de
+          contact -- ce sont pourtant les deux liens qui comptent le plus
+          ici. Elles restent a gauche sur grand ecran, et passent centrees
+          au-dessus de la carte en mobile, ou la grille n'a qu'une colonne. */}
+      <div className="order-first flex flex-col items-center gap-2 text-center text-[11px] font-semibold uppercase leading-[1.3] tracking-[0.1em] opacity-70 md:order-none md:items-start md:text-left md:text-[10px]">
         <a href="mailto:todedjiemma9@gmail.com" className="contact-link">todedjiemma9@gmail.com</a>
         <a href="https://wa.me/22968678025" target="_blank" rel="noreferrer" className="contact-link">+229 68 67 80 25</a>
       </div>
