@@ -1,7 +1,6 @@
 import MobileSiteMenu from "./MobileSiteMenu";
 import DesktopSiteHeader from "./DesktopSiteHeader";
 import Footer from "./Footer";
-import { LocalizedText } from "./LanguageToggle";
 
 // La page tenait sur un seul ecran (h-screen + overflow-hidden). Le Footer du
 // site faisant a lui seul 72vh, il ne pouvait pas y entrer : la page defile
@@ -67,67 +66,9 @@ const ContactPage = () => (
             </filter>
           </defs>
         </svg>
-
-        {/* Le cadre contient deux moities, comme la reference : la
-            newsletter a gauche, la signature et l'adresse a droite. */}
-        <div className="contact-card__inner relative z-10 flex h-full w-full">
-          <div className="news-letter-card is-contact">
-            <div className="news-letter-card__title">Newsletter</div>
-
-            <form className="news-form" onSubmit={(event) => event.preventDefault()}>
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Votre email"
-                aria-label="Votre email"
-                className="field-form"
-              />
-              <div className="fake-submit_w">
-                <button type="submit" className="submit-btn" aria-label="Envoyer" />
-                <span className="arrow-submit-form" aria-hidden="true">
-                  <svg width="100%" height="100%" viewBox="0 0 9 9" fill="none">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M6.97361 0.199952L0.200012 0.199951L0.200012 1.42636L6.10593 1.42636L0.412716 7.11956L1.2804 7.98725L6.97361 2.29404L6.97361 8.19995L8.20001 8.19995L8.20001 1.42636L8.20001 0.199953L6.97361 0.199952Z"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="0.4"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </form>
-          </div>
-
-          <div className="card-svg_w">
-            {/* Meme monogramme que la section ET de la home : script rose. */}
-            <span className="clients-script card-signature" aria-hidden="true">ET</span>
-            <p className="card-address">
-              Cotonou
-              <br />
-              Bénin
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Colonne droite : liens sociaux */}
-      <div className="hidden flex-col items-end gap-2 text-right text-[10px] font-semibold uppercase leading-[1.3] tracking-[0.1em] opacity-70 md:flex">
-        <a href="https://www.linkedin.com/in/Emmanuela%20TODEDJI" target="_blank" rel="noreferrer" className="contact-link">LinkedIn</a>
-        <a href="https://wa.me/22968678025" target="_blank" rel="noreferrer" className="contact-link">WhatsApp</a>
       </div>
     </section>
 
-    {/* Pied de page interne : la page ne scrolle pas. */}
-    <footer className="relative z-10 flex items-end justify-between border-t border-current/15 py-5 text-[10px] font-semibold uppercase tracking-[0.1em] opacity-60 md:text-[11px]">
-      <p>
-        Cotonou, Bénin
-        <span className="block opacity-70"><LocalizedText fr="Disponible pour de nouveaux projets" en="Available for new projects" /></span>
-      </p>
-      <p>Emmanuela© 2026</p>
-    </footer>
     </div>
 
     <div className="-mx-5 md:-mx-8">

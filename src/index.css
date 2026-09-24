@@ -612,7 +612,11 @@ html:not(.light-site) [class~="text-[#7d7a73]"] {
   }
 
   .nav-hover-btn {
-    @apply relative ms-10 cursor-pointer font-general text-xs uppercase text-blue-50 transition-all duration-300 hover:tracking-[0.08em] hover:line-through;
+    /* Pas de hover:tracking ici : il ecartait les lettres au survol, si bien
+       que le lien semblait s'etirer en plus d'etre barre. Les autres pages
+       (DesktopSiteHeader) n'ont pas cet effet, la nav de l'accueil s'aligne
+       donc sur elles. */
+    @apply relative ms-10 cursor-pointer font-general text-xs uppercase text-blue-50 transition-all duration-300 hover:line-through;
   }
 
 .mobile-menu-link {
