@@ -36,7 +36,11 @@ const InteractionSounds = () => {
       if (!soundEffectsEnabled()) return;
       const target = event.target as HTMLElement | null;
       const link = target?.closest("a[href], nav button, [data-nav-link], [data-theme-sound], [role='link']");
-      if (!link || link.closest("[data-project-card]")) return;
+      // Les cartes projets de l'accueil sont des <a> pleine largeur : sur
+      // mobile, le simple fait de poser le doigt dessus pour faire defiler la
+      // page declenchait le son, alors qu'aucun clic n'aboutissait. Elles sont
+      // donc exclues ici, comme le sont deja les [data-project-card].
+      if (!link || link.closest("[data-project-card], .work-card")) return;
       playPool(linkPool, linkPoolIndex++);
     };
     const delayLinkNavigation = (event: MouseEvent) => {

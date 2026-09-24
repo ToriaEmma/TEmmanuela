@@ -1294,6 +1294,16 @@ body .legacy-serif * {
   width: 100%;
 }
 
+/* En mobile ce mot de fond passe en anton, la meme police que
+   "CONCEVOIR AUTREMENT" (.legacy-display). `body *` impose circular-web en
+   !important, d'ou le selecteur dedie et le !important ici aussi. */
+@media (max-width: 767px) {
+  body .works-float,
+  body .works-float * {
+    font-family: "anton", sans-serif !important;
+  }
+}
+
 /* Titre de projet : la premiere lettre bascule en script, le reste garde le
    display condense. `body *` impose circular-web en !important, d'ou les
    selecteurs dedies ici aussi. */

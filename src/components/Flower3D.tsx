@@ -107,7 +107,7 @@ function FlowerModel() {
   // Pas de redressement : les noeuds racines du GLB portent deja un quart de
   // tour sur X, en rajouter un recoucherait la fleur.
   return (
-    <group ref={spinRef} scale={isMobile ? 2.9 : 5.2} position={[0, isMobile ? 0.45 : -0.65, 0]}>
+    <group ref={spinRef} scale={isMobile ? 4.3 : 5.2} position={[0, isMobile ? -0.2 : -0.65, 0]}>
       <group scale={fit.scale}>
         <group position={fit.center}>
           <primitive object={scene} />

@@ -14,10 +14,12 @@ const Wind = ({ className = "" }: { className?: string }) => (
 );
 
 const ClientsSection = () => (
-  /* En mobile le hero se termine sur "UI / UX" puis laisse ~500px de vide
-     avant cette section. La marge negative la fait remonter au niveau du
-     dernier mot ; le desktop, lui, garde son enchainement normal. */
-  <section className="clients-section relative z-[60] -mt-[300px] w-screen overflow-hidden bg-black px-5 pb-16 pt-0 text-white md:z-auto md:mt-0 md:px-8 md:pb-24">
+  /* En mobile le hero se termine sur "UI / UX" puis laisse du vide avant
+     cette section. La marge negative la fait remonter au niveau du dernier
+     mot. Elle est calee sur la taille et la position du bloc de titres du
+     hero : agrandir ceux-ci ou les descendre demande de la reduire, sinon la
+     section leur repasse dessus. Le desktop garde son enchainement normal. */
+  <section className="clients-section relative z-[60] -mt-[180px] w-screen overflow-hidden bg-black px-5 pb-16 pt-0 text-white md:z-auto md:mt-0 md:px-8 md:pb-24">
     {/* Center stage: copy left / oval monogram / copy right */}
     {/* En mobile la colonne s'ouvrait sur un pt-[5vw] puis un gap de 40px :
         la phrase d'accroche tombait trop bas et l'ovale la repoussait encore.

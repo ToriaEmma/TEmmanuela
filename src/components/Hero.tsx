@@ -88,7 +88,7 @@ const Hero = () => {
             fleur passe ENTRE elles : le haut derriere (z-34), le bas devant
             (z-40). Elles restent dans un conteneur commun de meme geometrie,
             donc le raccord ne bouge pas. */}
-        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-[34] mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-[34] mx-auto flex w-[93%] -translate-y-1/2 flex-col md:top-[26%] md:w-[90%]">
           <img
             src="/oval_mobile_top.svg"
             alt=""
@@ -145,7 +145,7 @@ const Hero = () => {
             elle s'eteint avec la scene. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[36] h-[68svh] bg-gradient-to-b from-transparent via-black/45 to-black md:h-[95dvh] md:via-black/25 md:to-black" />
 
-        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-40 mx-auto flex w-[90%] -translate-y-1/2 flex-col md:top-[26%]">
+        <div className="pointer-events-none absolute inset-x-0 top-[30%] z-40 mx-auto flex w-[93%] -translate-y-1/2 flex-col md:top-[26%] md:w-[90%]">
           <img
             src="/oval_mobile_top.svg"
             alt=""
@@ -193,7 +193,7 @@ const Hero = () => {
           normal : chaque ligne herite de la meme police, taille et interligne,
           donc l'empilement reste exact sans calcul de decalage par ligne. */}
       <div
-        className="hero-display pointer-events-none absolute inset-x-0 top-[60svh] z-[33] select-none text-center text-[13vw] font-black uppercase leading-[0.9] tracking-[0.01em] md:top-[100dvh] md:-translate-y-[22%] md:text-[14vw]"
+        className="hero-display pointer-events-none absolute inset-x-0 top-[68svh] z-[33] select-none text-center text-[15vw] font-black uppercase leading-[1.02] tracking-[0.01em] md:top-[100dvh] md:-translate-y-[22%] md:text-[14vw] md:leading-[0.9]"
         aria-hidden="true"
       >
         <h1 className="text-white/90">Creative</h1>
