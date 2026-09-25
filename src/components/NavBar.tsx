@@ -43,8 +43,13 @@ const NavBar = () => {
   // Vrai tant que le hero couvre encore le haut de l'ecran : la barre y reste
   // blanche (voir .is-over-hero), puis retrouve son adaptation de couleur.
   const [overHero, setOverHero] = useState(true);
+  // Vrai des que la page a quitte le haut : en mobile le nom et l'heure
+  // s'effacent alors, pour ne pas suivre le lecteur tout au long du
+  // defilement. Le bouton Menu, lui, reste accessible en permanence.
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const check = () => {
+      setScrolled(window.scrollY > 8);
       const hero = document.querySelector(".hero-display")?.closest("section, div");
       if (!hero) return setOverHero(window.scrollY < window.innerHeight * 0.8);
       setOverHero(hero.getBoundingClientRect().bottom > 74);
@@ -109,7 +114,14 @@ const NavBar = () => {
            sur tout le hero. */
         className={`mobile-adaptive-nav fixed inset-x-0 top-0 z-[60] flex h-[74px] items-center justify-between px-5 font-mono transition-transform duration-300 md:hidden ${overHero ? "is-over-hero" : ""}`}
       >
-        <div className="text-xs uppercase leading-relaxed">
+        {/* Le nom et l'heure ne vivent qu'en haut de page : des que le
+            defilement commence ils s'effacent, et le bouton Menu reste seul.
+            `invisible` en fin de transition plutot que `hidden` : le bloc
+            garde sa place, donc le bouton ne se deplace pas. */}
+        <div
+          className={`text-xs uppercase leading-relaxed transition-opacity duration-300 ${scrolled ? "invisible opacity-0" : "visible opacity-100"}`}
+          aria-hidden={scrolled}
+        >
           <a href="/" className="block font-bold">Emmanuela©</a>
           <p>{mobileTime} GMT+1</p>
         </div>
