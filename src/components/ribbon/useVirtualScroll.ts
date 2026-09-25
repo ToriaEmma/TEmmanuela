@@ -32,7 +32,6 @@ export const useVirtualScroll = ({ enabled = true, onTick }: Options = {}) => {
 
     const s = state.current;
     let touchY = 0;
-    let touchX = 0;
     let lastTouchDelta = 0;
 
     // L'elastique s'applique a la CIBLE, pas a la valeur courante : l'avance
@@ -64,24 +63,20 @@ export const useVirtualScroll = ({ enabled = true, onTick }: Options = {}) => {
 
     const onTouchStart = (e: TouchEvent) => {
       touchY = e.touches[0].clientY;
-      touchX = e.touches[0].clientX;
       lastTouchDelta = 0;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (frozen()) return;
       const y = e.touches[0].clientY;
-      const x = e.touches[0].clientX;
-      // Les deux axes etaient ADDITIONNES : un glissement vertical et un
-      // glissement horizontal se compensaient ou s'ajoutaient selon l'angle
-      // du doigt, si bien que le ruban partait dans le mauvais sens ou
-      // n'avancait pas. On ne garde que l'axe dominant du geste, et le
-      // defilement repond alors aussi bien vers le haut que vers le bas.
-      const dy = touchY - y;
-      const dx = touchX - x;
-      const delta = (Math.abs(dy) >= Math.abs(dx) ? dy : dx) * TOUCH_MULT;
+      // Seul l'axe VERTICAL pilote la bande. Les deux axes ont d'abord ete
+      // additionnes, puis on a garde le dominant : dans les deux cas un
+      // glissement lateral faisait avancer le ruban, si bien qu'il semblait
+      // defiler dans les deux sens selon l'angle du doigt. Le geste est
+      // desormais le meme que sur le reste du site -- haut/bas -- et un
+      // mouvement horizontal ne le touche plus.
+      const delta = (touchY - y) * TOUCH_MULT;
       touchY = y;
-      touchX = x;
       lastTouchDelta = delta;
       push(delta);
     };
