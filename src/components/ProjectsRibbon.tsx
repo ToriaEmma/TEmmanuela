@@ -240,6 +240,9 @@ const ProjectsRibbon = ({ cards }: { cards: RibbonCard[] }) => {
     const geometry = new THREE.PlaneGeometry(1, 1, 24, 24);
 
     const loader = new THREE.TextureLoader();
+    // Une image arrivee pendant que la bande est immobile : il faut une frame
+    // pour la montrer, sinon la carte reste grise jusqu'au prochain geste.
+    let pendingDraw = false;
     const items: Item[] = [];
 
     const articles = Array.from(track.children) as HTMLElement[];
@@ -314,6 +317,7 @@ const ProjectsRibbon = ({ cards }: { cards: RibbonCard[] }) => {
           // u_alpha est deja anime au montage : la carte est opaque, il n'y a
           // plus rien a fondre ici.
           material.uniforms.u_hasTexture.value = 1;
+          pendingDraw = true;
         });
       }
 
@@ -348,7 +352,11 @@ const ProjectsRibbon = ({ cards }: { cards: RibbonCard[] }) => {
     floor.show(true, 0.6);
 
     let last = performance.now();
+    // La frame du ticker deja dessinee : la bande et la boucle d'animation
+    // ci-dessous ne doivent pas rendre deux fois la meme frame.
+    let drawnFrame = -1;
     const render = () => {
+      drawnFrame = gsap.ticker.frame;
       const now = performance.now();
       const dt = (now - last) / 1000;
       last = now;
@@ -474,7 +482,29 @@ const ProjectsRibbon = ({ cards }: { cards: RibbonCard[] }) => {
     const onResize = () => measure();
     window.addEventListener("resize", onResize);
 
+    // La bande ne redessine que lorsqu'elle defile (voir useVirtualScroll).
+    // Immobile, plus rien ne faisait vivre la trainee du curseur, le creux du
+    // survol ni l'apparition du sol : l'effet se figeait puis disparaissait.
+    // Cette boucle redessine tant que l'un d'eux s'anime, puis une derniere
+    // fois pour poser la frame de repos.
+    let animating = false;
+    const animate = () => {
+      if (drawnFrame === gsap.ticker.frame) return;
+      // Modale ouverte : la bande est cachee derriere le panneau.
+      if (document.documentElement.dataset.ribbonFrozen === "1") return;
+      const was = animating;
+      animating =
+        pendingDraw ||
+        trail.needsFrame() ||
+        floor.isAnimating() ||
+        items.some((item) => gsap.isTweening(item.material.uniforms.u_hover));
+      pendingDraw = false;
+      if (animating || was) render();
+    };
+    gsap.ticker.add(animate);
+
     return () => {
+      gsap.ticker.remove(animate);
       observer.disconnect();
       window.removeEventListener("resize", onResize);
       for (const item of items) {

@@ -84,6 +84,11 @@ export class Floor {
     });
   }
 
+  /** Le fondu d'apparition est-il en cours : il faut alors redessiner. */
+  isAnimating() {
+    return gsap.isTweening(this.material.uniforms.u_alpha);
+  }
+
   // Place le sol sous la premiere carte. H et W sont les demi-dimensions du
   // frustum a z=0, cardBottom le bas de la carte en unites monde.
   sync(camera: THREE.PerspectiveCamera, H: number, W: number, cardBottom: number, door: number) {

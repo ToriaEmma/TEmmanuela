@@ -47,6 +47,9 @@ export class BallTrail {
 
   private ball: Ball = { tx: 0, ty: 0, sx: 0, sy: 0, seen: false, p: 0, on: false, e: 0 };
   private disposed = false;
+  // La balle etait-elle vivante a la derniere frame : une fois morte, il faut
+  // encore UNE frame pour rendre la page intacte par la voie rapide.
+  private wasLive = false;
 
   constructor(renderer: THREE.WebGLRenderer) {
     this.renderer = renderer;
@@ -234,6 +237,18 @@ export class BallTrail {
     this.postMaterial.uniforms.u_trail.value = write.texture;
   }
 
+  // La bande ne redessine que lorsqu'elle defile. Ceci dit si la balle, elle,
+  // a besoin de frames : le suiveur rattrape encore le curseur, ou la toile
+  // n'est pas encore revenue au repos. Sans ca, l'effet se figeait puis
+  // disparaissait des que la bande s'immobilisait.
+  needsFrame() {
+    if (this.disposed) return false;
+    if (this.wasLive) return true;
+    const b = this.ball;
+    if (b.p <= 0.001 || !b.seen) return false;
+    return Math.abs(b.tx - b.sx) + Math.abs(b.ty - b.sy) > 0.5;
+  }
+
   // Rend la scene, deformee si la balle est vivante. Sinon on passe par la
   // voie rapide : pas de render target du tout, la page au repos ne paie rien
   // pour un effet qui ne se voit pas.
@@ -241,6 +256,7 @@ export class BallTrail {
     if (this.disposed) return;
 
     const live = this.syncBall(Math.min(dt, 1 / 20));
+    this.wasLive = live;
 
     if (!live) {
       this.renderer.setRenderTarget(null);
