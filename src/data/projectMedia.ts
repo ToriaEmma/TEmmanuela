@@ -199,6 +199,17 @@ export const projectMedia: Record<string, ProjectMedia> = {
     ],
   },
 
+  // Melo : meme traitement que Snaki, une capture par ecran du site.
+  Melo: {
+    categories: [{ icon: ICON.web, label: "Site Web" }],
+    // La couverture est la derniere capture (les boites d'infusion) :
+    // l'ajouter en tete la montrerait deux fois.
+    skipCover: true,
+    blocks: [
+      { grid: 1, mobileGrid: 1, images: [1, 2, 3, 4].map((i) => `/works-modal/melo/${i}.webp`) },
+    ],
+  },
+
   MEB: {
     categories: [{ icon: ICON.web, label: "Site Web" }],
     // La couverture ouvrait la planche en doublon : on la laisse de cote.

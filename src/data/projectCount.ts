@@ -10,4 +10,4 @@
  * barre de navigation ferait entrer three.js dans le bundle de l'accueil.
  * A tenir a jour avec le tableau `projects` de ProjectsGrid / ProjectsList.
  */
-export const PROJECT_COUNT = 13;
+export const PROJECT_COUNT = 14;
