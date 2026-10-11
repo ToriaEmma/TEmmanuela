@@ -19,7 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Les sites livres : pas de visuel d'ouverture separe, leurs captures se
 // suffisent. Titre, description, puis les captures s'enchainent.
-const WEB_PROJECTS = new Set(["Score", "MEB", "ZEM", "ArbitraChain", "Shella", "Tekbot", "Snaki"]);
+const WEB_PROJECTS = new Set(["Score", "MEB", "ZEM", "ArbitraChain", "Shella", "Tekbot", "Snaki", "Melo"]);
 
 export type ModalProject = {
   name: string;
