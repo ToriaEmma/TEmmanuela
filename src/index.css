@@ -1626,10 +1626,6 @@ html.light-site .secondary-desktop-nav :is(a, button, span, div, p) {
   color: inherit;
 }
 
-.card-contact:first-of-type {
-  margin-top: 0.6em;
-}
-
 /* Le reticule traverse les cartes 3D et casse la profondeur : la vue spirale
    le masque via cette classe posee sur <body>. */
 body.hide-site-cursor .site-cursor { display: none; }

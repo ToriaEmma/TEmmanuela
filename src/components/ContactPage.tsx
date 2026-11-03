@@ -18,15 +18,9 @@ const ContactPage = () => (
 
     {/* Bloc central : grille 3 colonnes, la carte encadree au milieu. */}
     <section className="contact-stage relative z-10 grid flex-1 content-center items-center gap-5 py-6 md:gap-10 md:grid-cols-[1fr_auto_1fr]">
-      {/* Colonne gauche : coordonnees. En mobile elles etaient masquees
-          (hidden md:flex) et la page n'affichait donc aucun moyen de
-          contact -- ce sont pourtant les deux liens qui comptent le plus
-          ici. Elles restent a gauche sur grand ecran, et passent centrees
-          au-dessus de la carte en mobile, ou la grille n'a qu'une colonne. */}
-      <div className="order-first flex flex-col items-center gap-2 text-center text-[11px] font-semibold uppercase leading-[1.3] tracking-[0.1em] opacity-70 md:order-none md:items-start md:text-left md:text-[10px]">
-        <a href="mailto:todedjiemma9@gmail.com" className="contact-link">todedjiemma9@gmail.com</a>
-        <a href="https://wa.me/22968678025" target="_blank" rel="noreferrer" className="contact-link">+229 68 67 80 25</a>
-      </div>
+      {/* Colonne gauche vide : elle garde la carte au centre de la grille
+          sur grand ecran. Les coordonnees sont dans la carte. */}
+      <div className="hidden md:block" aria-hidden="true" />
 
       {/* La carte encadree, coeur de la composition. Le cadre est un SVG a
           ombres internes (comme la reference) et non un simple outline : les
@@ -108,9 +102,6 @@ const ContactPage = () => (
             {/* Meme monogramme que la section ET de la home : script rose. */}
             <span className="clients-script card-signature" aria-hidden="true">ET</span>
             <p className="card-address">
-              Cotonou
-              <br />
-              Bénin
               <a href="mailto:todedjiemma9@gmail.com" className="card-contact">todedjiemma9@gmail.com</a>
               <a href="tel:+22968678025" className="card-contact">+229 68 67 80 25</a>
             </p>
