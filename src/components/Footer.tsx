@@ -251,7 +251,7 @@ const Footer = () => {
 
         <div className="mt-8 grid grid-cols-2 gap-7 text-[10px] uppercase leading-relaxed md:grid-cols-5 md:text-sm">
           <div><p>Portfolio ’26</p><p>Cotonou, BJ</p></div>
-          <div><p>Contact</p><a href="mailto:todedjiemma9@gmail.com">todedjiemma9@gmail.com</a></div>
+          <div><p>Contact</p><a className="block" href="mailto:todedjiemma9@gmail.com">todedjiemma9@gmail.com</a><a className="block" href="tel:+22968678025">+229 68 67 80 25</a></div>
           <div><a href="https://www.linkedin.com/in/Emmanuela%20TODEDJI" target="_blank" rel="noreferrer">LinkedIn</a><a className="block" href="https://wa.me/22968678025" target="_blank" rel="noreferrer">WhatsApp</a></div>
           <div>
             <button type="button" onClick={toggleSound} className="block uppercase"><LocalizedText fr={`Son [${soundEnabled ? "On" : "Off"}]`} en={`Sound [${soundEnabled ? "On" : "Off"}]`} /></button>
