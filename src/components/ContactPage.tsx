@@ -111,6 +111,8 @@ const ContactPage = () => (
               Cotonou
               <br />
               Bénin
+              <a href="mailto:todedjiemma9@gmail.com" className="card-contact">todedjiemma9@gmail.com</a>
+              <a href="tel:+22968678025" className="card-contact">+229 68 67 80 25</a>
             </p>
           </div>
         </div>
