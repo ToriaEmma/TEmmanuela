@@ -28,7 +28,7 @@ const projects: Project[] = [
   { name: "Vennis Tenis Club", year: "2026", desc: "Identité de club sportif", descEn: "Sports club identity", href: "/vennis", image: "/REVOLU/big venis.webp", category: "brand" },
   { name: "MEB", year: "2026", desc: "Plateforme web complète", descEn: "Complete web platform", href: "https://meb-beta.vercel.app", image: "/works-modal/meb/2.webp", category: "website" },
   { name: "ZEM", year: "2026", desc: "Expérience digitale à fort contraste", descEn: "High-contrast digital experience", href: "https://zem2-0.vercel.app", image: "/works-modal/zem2.0/1.webp", category: "website" },
-  { name: "Snaki", year: "2026", desc: "Bubble tea : identité & boutique en ligne", descEn: "Bubble tea: brand & online store", href: "https://snaki-theta.vercel.app", image: "/works-modal/snaki/2.webp", category: "website" },
+  { name: "Snaki", year: "2026", desc: "Bubble tea : identité & boutique en ligne", descEn: "Bubble tea: brand & online store", href: "https://snakibuble.vercel.app", image: "/works-modal/snaki/2.webp", category: "website" },
   { name: "Tekbot", year: "2025", desc: "Plateforme d'apprentissage robotique", descEn: "Robotics learning platform", href: "/tekbot", image: "/thumbs/tekbot.webp", category: "uiux" },
   { name: "Shella", year: "2026", desc: "App de couture sur mesure & paiement mobile", descEn: "Made-to-measure tailoring app & mobile payment", href: "/shella", image: "/shella/cover.webp", category: "uiux" },
   { name: "Dogs", year: "2026", desc: "Identité de marque illustrée", descEn: "Illustrated brand identity", href: "/dogs", image: "/optimized/dogs-card.webp", category: "brand" },

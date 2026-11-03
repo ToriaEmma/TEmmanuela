@@ -7,7 +7,7 @@ import { navigateTo } from "../utils/navigation";
 gsap.registerPlugin(ScrollTrigger);
 
 const works = [
-  { name: "Snaki", year: "2026", tag: "Bubble tea & Web Design", tagEn: "Bubble tea & Web Design", href: "https://snaki-theta.vercel.app", image: "/works-modal/snaki/2.webp", mobileImage: "/works-mobile/snaki.webp", isSite: true },
+  { name: "Snaki", year: "2026", tag: "Bubble tea & Web Design", tagEn: "Bubble tea & Web Design", href: "https://snakibuble.vercel.app", image: "/works-modal/snaki/2.webp", mobileImage: "/works-mobile/snaki.webp", isSite: true },
   { name: "Vintage", year: "2026", tag: "Marketplace & Brand Design", tagEn: "Marketplace & Brand Design", href: "/vintage", image: "/REVOLU/big vintagd.webp", mobileImage: "/works-mobile/vintage.webp" },
   { name: "Score", year: "2026", tag: "Site Web", tagEn: "Website", href: "https://score-blond-six.vercel.app", image: "/site%20/score-preview.webp", mobileImage: "/works-mobile/score.webp", titleColor: "#ffffff", titleOutline: "#000000", isSite: true },
   { name: "Cats", year: "2026", tag: "Brand Design", tagEn: "Brand Design", href: "/cats", image: "/optimized/cats-card.webp", mobileImage: "/works-mobile/cats.webp" },
