@@ -1,13 +1,6 @@
-import Hero from "./components/Hero";
 import "locomotive-scroll/dist/locomotive-scroll.css";
-import { SmoothScrollProvider } from "./context/ScrollProviderContext.tsx";
-import NavBar from "./components/NavBar.tsx";
-import ClientsSection from "./components/ClientsSection.tsx";
-import LegacySection from "./components/LegacySection.tsx";
-import WorksShowcase from "./components/WorksShowcase.tsx";
-import ServiceCards from "./components/ServiceCards.tsx";
-import Footer from "./components/Footer.tsx";
 import { lazy, Suspense, useEffect, useState } from "react";
+import { warmUpSite } from "./utils/warmUpSite";
 
 // Chargees a la demande : chacune traine ses visuels et, pour la grille
 // de projets, tout le moteur WebGL. Les garder en import statique mettait ce
@@ -21,8 +14,12 @@ const VintageProject = lazy(() => import("./components/VintageProject"));
 const DogsProject = lazy(() => import("./components/DogsProject"));
 const CatsProject = lazy(() => import("./components/CatsProject"));
 const ProjectShowcase = lazy(() => import("./components/ProjectShowcase"));
+// L'accueil aussi : il n'apparait qu'a la fin du loader. Sorti du bundle
+// initial, la premiere image du loader n'attend plus son telechargement ni son
+// parsing ; warmUpSite le precharge pendant l'animation.
+const loadHomePage = () => import("./components/HomePage");
+const HomePage = lazy(loadHomePage);
 
-import MobileSiteMenu from "./components/MobileSiteMenu";
 import PinkCursor from "./components/PinkCursor";
 import SiteLoader from "./components/SiteLoader";
 import InteractionSounds from "./components/InteractionSounds";
@@ -137,51 +134,7 @@ function PageContent() {
     );
   }
 
-  return (
-    <>
-      <SmoothScrollProvider>
-        <NavBar />
-        <MobileSiteMenu showIdentity={false} />
-        <div data-scroll-container className="  overflow-hidden main-container relative min-h-screen w-screen ">
-          <Hero />
-          {/* Bloc noir qui prolonge le hero. Meme noir que la fin de son
-              degrade et meme grain, pour que le raccord soit invisible.
-
-              Sur desktop il porte la SUITE du titre (branding, web design,
-              direction, ui / ux) : ces mots ne tiennent pas dans le hero sans
-              en decaler le contenu, alors qu'ici ils s'enchainent sans rien
-              bouger. Memes tokens typographiques que la pile du hero --
-              hero-display, 14vw, leading-[0.9], tracking-[0.01em] -- donc la
-              lecture se poursuit comme s'il n'y avait qu'un seul bloc.
-
-              En mobile les six mots sont deja dans le hero : le bloc y reste
-              une simple respiration noire. */}
-          <div
-            aria-hidden="true"
-            className="relative z-20 h-[40svh] w-full bg-black md:-mt-[48dvh] md:flex md:h-auto md:flex-col md:justify-start md:bg-transparent md:pb-[18dvh]"
-          >
-            <div className="hero-display hidden select-none text-center text-[14vw] font-black uppercase leading-[0.9] tracking-[0.01em] text-white/85 md:block">
-              <p>branding</p>
-              <p>web design</p>
-              <p>direction</p>
-              {/* leading-[0.9] sur du 14vw : la boite de ligne depasse largement
-                  les glyphes, d'ou le calage vertical manuel des motifs. */}
-              <p className="flex items-center justify-center gap-[19vw]">
-                <img src="/motif.webp" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
-                ui / ux
-                <img src="/motif.webp" alt="" aria-hidden="true" className="h-[28px] w-auto translate-y-[5vw]" />
-              </p>
-            </div>
-          </div>
-          <ClientsSection />
-          <LegacySection />
-          <WorksShowcase />
-          <ServiceCards />
-          <Footer/>
-        </div>
-      </SmoothScrollProvider>
-    </>
-  );
+  return <HomePage />;
 }
 
 function App() {
@@ -193,6 +146,9 @@ function App() {
     const timer = window.setTimeout(() => setIsLoading(false), 5600);
     return () => window.clearTimeout(timer);
   }, []);
+
+  // Pendant l'animation du loader : code de l'accueil et visuels du hero.
+  useEffect(() => warmUpSite(window.location.pathname === "/" ? loadHomePage : undefined), []);
   const [, setLocationKey] = useState(() => `${window.location.pathname}${window.location.search}${window.location.hash}`);
 
   useEffect(() => {

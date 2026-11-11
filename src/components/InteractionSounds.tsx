@@ -4,28 +4,40 @@ import { navigateTo } from "../utils/navigation";
 
 const InteractionSounds = () => {
   useEffect(() => {
-    const linkSound = new Audio("/passe.mp3");
-    const cardSound = new Audio("/card pass.mp3");
-    const clickSound = new Audio("/click.mp3");
-    linkSound.preload = "auto";
-    cardSound.preload = "auto";
-    cardSound.volume = 0.65;
-    cardSound.load();
-    clickSound.preload = "auto";
-    clickSound.volume = 0.45;
-    const createPool = (source: HTMLAudioElement, volume: number) => Array.from({ length: 5 }, () => {
-      const sound = new Audio(source.src);
-      sound.preload = "auto";
-      sound.volume = volume;
-      sound.load();
-      return sound;
-    });
-    const linkPool = createPool(linkSound, 0.75);
-    const cardPool = createPool(cardSound, 0.85);
-    const clickPool = createPool(clickSound, 0.55);
-    let linkPoolIndex = 0;
-    let cardPoolIndex = 0;
-    let clickPoolIndex = 0;
+    // Les 18 lecteurs audio (3 sons x pools de 5, chacun en preload "auto")
+    // partaient au demarrage, en pleine animation du loader : plusieurs
+    // centaines de Ko sur le reseau avant meme la premiere image. Ils ne
+    // servent qu'au premier clic, on les cree donc juste apres le loader --
+    // ou au premier contact si l'utilisateur touche l'ecran avant.
+    type Pools = { link: HTMLAudioElement[]; card: HTMLAudioElement[]; click: HTMLAudioElement[] };
+    let pools: Pools | null = null;
+    const ensurePools = (): Pools => {
+      if (pools) return pools;
+      const linkSound = new Audio("/passe.mp3");
+      const cardSound = new Audio("/card pass.mp3");
+      const clickSound = new Audio("/click.mp3");
+      linkSound.preload = "auto";
+      cardSound.preload = "auto";
+      cardSound.volume = 0.65;
+      cardSound.load();
+      clickSound.preload = "auto";
+      clickSound.volume = 0.45;
+      const createPool = (source: HTMLAudioElement, volume: number) => Array.from({ length: 5 }, () => {
+        const sound = new Audio(source.src);
+        sound.preload = "auto";
+        sound.volume = volume;
+        sound.load();
+        return sound;
+      });
+      pools = {
+        link: createPool(linkSound, 0.75),
+        card: createPool(cardSound, 0.85),
+        click: createPool(clickSound, 0.55),
+      };
+      return pools;
+    };
+    // 6 s : le loader en dure 5,6.
+    const poolsTimer = window.setTimeout(ensurePools, 6000);
     const playPool = (pool: HTMLAudioElement[], index: number) => {
       const sound = pool[index % pool.length];
       sound.currentTime = 0;
@@ -37,7 +49,7 @@ const InteractionSounds = () => {
       const target = event.target as HTMLElement | null;
       const link = target?.closest("a[href], nav button, [data-nav-link], [data-theme-sound], [role='link']");
       if (!link || link.closest("[data-project-card]")) return;
-      playPool(linkPool, linkPoolIndex++);
+      playPool(ensurePools().link, linkPoolIndex++);
     };
     const delayLinkNavigation = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -62,19 +74,19 @@ const InteractionSounds = () => {
       const target = event.target as HTMLElement | null;
       const card = target?.closest("[data-project-card]");
       if (!card) return;
-      playPool(cardPool, cardPoolIndex++);
+      playPool(ensurePools().card, cardPoolIndex++);
     };
     const playClickSound = (event: PointerEvent) => {
       if (!soundEffectsEnabled()) return;
       const target = event.target as HTMLElement | null;
       if (!target?.closest("[data-click-sound]")) return;
-      playPool(clickPool, clickPoolIndex++);
+      playPool(ensurePools().click, clickPoolIndex++);
     };
     const playPaletteSound = (event: PointerEvent) => {
       if (!soundEffectsEnabled()) return;
       const target = event.target as HTMLElement | null;
       if (!target?.closest("[data-poster-sound]")) return;
-      playPool(cardPool, cardPoolIndex++);
+      playPool(ensurePools().card, cardPoolIndex++);
     };
 
     document.addEventListener("pointerdown", playLinkSound);
@@ -83,6 +95,7 @@ const InteractionSounds = () => {
     document.addEventListener("pointerdown", playPaletteSound);
     document.addEventListener("click", delayLinkNavigation);
     return () => {
+      window.clearTimeout(poolsTimer);
       document.removeEventListener("pointerdown", playLinkSound);
       document.removeEventListener("pointerdown", playCardSound);
       document.removeEventListener("pointerdown", playClickSound);

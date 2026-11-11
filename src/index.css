@@ -1,4 +1,7 @@
-@import url("https://fonts.cdnfonts.com/css/general-sans");
+/* Plus d'@import de General Sans (fonts.cdnfonts.com) : la feuille bloquait le
+   premier rendu (~0,9 s sur mobile) alors que la police n'est jamais
+   affichee -- la regle `body * { font-family: "circular-web" !important }`
+   plus bas la remplace sur tous les elements. */
 
 @tailwind base;
 @tailwind components;
@@ -589,10 +592,26 @@ html:not(.light-site) [class~="text-[#7d7a73]"] {
     font-display: swap;
   }
 
+  /* Anton en deux morceaux. Le loader et le titre du hero l'affichent des la
+     premiere image : le fichier complet (47 Ko, cyrillique et vietnamien
+     compris) passait donc dans le chemin critique. Le sous-ensemble latin
+     (20 Ko, memes glyphes, meme crenage) suffit au site ; le fichier complet
+     reste declare pour tout autre caractere et n'est telecharge que si une
+     page en affiche un. La regle declaree EN DERNIER est consultee en
+     premier : l'ordre compte. */
   @font-face {
     font-family: "anton";
     src: url("/fonts/Anton-Regular.woff2") format("woff2");
     font-display: swap;
+    unicode-range: U+0180-10FFFF;
+  }
+
+  @font-face {
+    font-family: "anton";
+    src: url("/fonts/Anton-Regular-latin.woff2") format("woff2");
+    font-display: swap;
+    unicode-range: U+0000-017F, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122,
+      U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
 
   @font-face {

@@ -13,6 +13,13 @@ const images = [
   "/loader/7.webp",
 ];
 
+/** Largeur affichee de la case (voir .site-loader__img) : 50 % de l'ecran en
+    mobile, 25 % a partir de 768px. Avec la variante 540px, un telephone ne
+    telecharge plus l'original 720px qu'il reduisait de toute facon (~35 %
+    d'octets en moins pendant le loader) ; les ecrans qui en ont besoin
+    gardent le 720px. Doit rester identique au preload de index.html. */
+const LOADER_IMAGE_SIZES = "(min-width: 768px) 25vw, 50vw";
+
 const HEADING = "Emmanuela©";
 
 /** Colonnes du compteur. La 1re ne monte que jusqu'a "1", les deux autres
@@ -122,8 +129,21 @@ const SiteLoader = () => {
       <div className="site-loader__images" aria-hidden="true">
         <div className="site-loader__img">
           <div className="site-loader__images-inner">
-            {images.map((src) => (
-              <img key={src} className="site-loader__image" src={src.replace(/ /g, "%20")} alt="" loading="eager" decoding="async" fetchPriority="high" />
+            {/* Seule la 1re image est visible a la premiere frame : elle passe
+                en priorite haute, avec la police du loader. Les suivantes
+                n'apparaissent qu'en cascade (0,2 s d'ecart) et passent apres. */}
+            {images.map((src, index) => (
+              <img
+                key={src}
+                className="site-loader__image"
+                src={src}
+                srcSet={`${src.replace(".webp", "-540.webp")} 540w, ${src} 720w`}
+                sizes={LOADER_IMAGE_SIZES}
+                alt=""
+                loading="eager"
+                decoding="async"
+                fetchPriority={index === 0 ? "high" : "low"}
+              />
             ))}
           </div>
         </div>
