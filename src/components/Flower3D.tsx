@@ -14,6 +14,9 @@ const STEM_COLOR = "#D4FF36";
 const SPIN_SPEED = 0.6;
 
 const MODEL_URL = "/Flower2.glb";
+// Le modele est telecharge et decode des que ce module est importe (pendant le
+// loader, voir warmUpSite), pour que la fleur soit prete a l'arrivee du hero.
+useGLTF.preload(MODEL_URL);
 
 type Fit = { scale: number; center: [number, number, number] };
 

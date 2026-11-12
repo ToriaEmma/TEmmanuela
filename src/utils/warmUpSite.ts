@@ -57,7 +57,12 @@ export const warmUpSite = (loadPage?: () => Promise<unknown>) => {
     window.removeEventListener("load", onLoad);
     preloadFont("/fonts/Anton-Regular-latin.woff2");
     if (loadPage) void loadPage().catch(() => undefined);
-    if (window.location.pathname === "/") heroAssets().forEach(preloadImage);
+    if (window.location.pathname === "/") {
+      heroAssets().forEach(preloadImage);
+      // La fleur 3D : son code (three.js) et son modele, telecharges pendant
+      // le loader au lieu d'attendre le montage du hero.
+      void import("../components/Flower3D").catch(() => undefined);
+    }
   };
 
   // Apres le chargement de la page ET deux frames (le loader a peint), avec un
